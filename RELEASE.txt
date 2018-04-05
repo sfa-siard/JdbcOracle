@@ -1,0 +1,5 @@
+Release Notes for JdbcOracle 2.0
+================================
+
+2.0.33
+First release of JdbcOracle on GitHub.
