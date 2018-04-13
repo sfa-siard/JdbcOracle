@@ -216,8 +216,13 @@ public class OracleArray
   {
     if (_oarray == null)
     {
-      try { _qiVarray = new QualifiedId(sVarrayTypeName); }
-      catch(ParseException pe) { throw new SQLException("Cannot parse "+sVarrayTypeName+"!"); }
+      String[] as = sVarrayTypeName.split("\\.");
+      _qiVarray = new QualifiedId();
+      _qiVarray.setName(as[as.length - 1]);
+      if (as.length > 1)
+        _qiVarray.setSchema(as[as.length - 2]);
+      if (as.length > 2)
+        _qiVarray.setCatalog(as[as.length - 3]);
     }
     return getOracleArray();
   }
