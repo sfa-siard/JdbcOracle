@@ -628,7 +628,6 @@ public class OracleResultSet
   /*------------------------------------------------------------------*/
   /** {@inheritDoc} */
   @Override
-  @SuppressWarnings("deprecation")
   public void updateArray(int columnIndex, Array x) throws SQLException
   {
     try 
@@ -637,11 +636,7 @@ public class OracleResultSet
       /* make sure, type conforms to table column */
       oracle.jdbc.OracleResultSetMetaData orsmd = (oracle.jdbc.OracleResultSetMetaData)getMetaData().unwrap(ResultSetMetaData.class);
       String sTypeName = orsmd.getColumnTypeName(columnIndex);
-      oracle.jdbc.OracleConnection oconn = (oracle.jdbc.OracleConnection)getStatement().getConnection().unwrap(Connection.class);
-      oracle.sql.ArrayDescriptor oad = oracle.sql.ArrayDescriptor.createDescriptor(sTypeName, oconn); 
-      oracle.sql.ARRAY oarray = new oracle.sql.ARRAY(oad, oconn, oa.unwrap(Array.class).getArray());
-      super.updateArray(columnIndex, oarray); 
-      oa.wrap(oarray);
+      super.updateArray(columnIndex, oa.getOracleArray(sTypeName)); 
     }
     catch(OracleSQLException sse) { throwNotSupportedException(sse); }
   } /* updateArray */

@@ -113,6 +113,47 @@ public class OracleResultSetTester
   }
   public static List<TestColumnDefinition> _listCdComplex = getListCdComplex();
   
+  private static List<TestColumnDefinition> getListCdArray()
+  {
+    List<TestColumnDefinition> listCd = new ArrayList<TestColumnDefinition>();
+    listCd.add(new TestColumnDefinition("CARRAY_4[1]","CHARACTER(3)","USD"));
+    listCd.add(new TestColumnDefinition("CARRAY_4[2]","CHARACTER(3)",null));
+    listCd.add(new TestColumnDefinition("CARRAY_4[3]","CHARACTER(3)","CHF"));
+    listCd.add(new TestColumnDefinition("CARRAY_4[4]","CHARACTER(3)","EUR"));
+    return listCd;
+  }
+  public static List<TestColumnDefinition> _listCdArray = getListCdArray();
+
+  private static List<TestColumnDefinition> getListAdObject()
+  {
+    List<TestColumnDefinition> listCd = new ArrayList<TestColumnDefinition>();
+    listCd.add(new TestColumnDefinition("LABEL","VARCHAR(255)","E"));
+    listCd.add(new TestColumnDefinition("VALUE","BINARY_DOUBLE",Double.valueOf(Math.E)));
+    return listCd;
+  }
+  public static List<TestColumnDefinition> _listAdObject = getListAdObject();
+  
+  private static List<TestColumnDefinition> getListAdNativeComplex()
+  {
+    List<TestColumnDefinition> listCd = new ArrayList<TestColumnDefinition>();
+    listCd.add(new TestColumnDefinition("LABEL","VARCHAR(255)","Native Complex"));
+    listCd.add(new TestColumnDefinition("LARGE","BLOB",TestUtils.getBytes(1000)));
+    listCd.add(new TestColumnDefinition("OBJ",TestOracleDatabase.getQualifiedObjectType().format(),_listAdObject));
+    return listCd;
+  }
+  public static List<TestColumnDefinition> _listAdNativeComplex = getListAdNativeComplex();
+
+  private static List<TestColumnDefinition> getListNativeComplex()
+  {
+    List<TestColumnDefinition> listCd = new ArrayList<TestColumnDefinition>();
+    listCd.add(new TestColumnDefinition("CID","INTEGER",Integer.valueOf(123456789)));
+    listCd.add(new TestColumnDefinition("CUDT_VARRAY","CHARACTER(3) ARRAY[4]",_listCdArray));
+    listCd.add(new TestColumnDefinition("CUDT_OBJECT",TestOracleDatabase.getQualifiedObjectType().format(),_listAdObject));
+    listCd.add(new TestColumnDefinition("CUDT_COMPLEX",TestOracleDatabase.getQualifiedComplexType().format(),_listAdNativeComplex));
+    return listCd;
+  }
+  public static List<TestColumnDefinition> _listCdNativeComplex = getListNativeComplex();
+  
 	@BeforeClass
 	public static void setUpClass() 
 	{
@@ -1503,6 +1544,7 @@ public class OracleResultSetTester
           if (o instanceof Struct)
           {
             Struct struct = (Struct)o;
+            // System.out.println(((oracle.sql.STRUCT)struct).dump());
             QualifiedId qiTypeExpected = new QualifiedId(tcd.getType());
             QualifiedId qiType = new QualifiedId(struct.getSQLTypeName());
             assertEquals("Invalid value for Struct!",qiTypeExpected,qiType);
@@ -2396,26 +2438,26 @@ public class OracleResultSetTester
   } /* testInsertRow */
   
   private Struct createStruct(TestColumnDefinition tcd)
-    throws SQLException
-  {
-    Struct struct = null;
-    @SuppressWarnings("unchecked")
-    List<TestColumnDefinition> listAttributes = (List<TestColumnDefinition>)tcd.getValue();
-    Object[] aoAttribute = new Object[listAttributes.size()];
-    for (int i = 0; i < listAttributes.size(); i++)
+      throws SQLException
     {
-      TestColumnDefinition tad = listAttributes.get(i);
-      if (tad.getValue() instanceof List<?>)
-        aoAttribute[i] = createStruct(tad);
-      else
-        aoAttribute[i] = tad.getValue();
-    }
-    struct = getResultSet().getStatement().getConnection().createStruct(tcd.getType(), aoAttribute);
-    return struct;
-  } /* createStruct */
-  
+      Struct struct = null;
+      @SuppressWarnings("unchecked")
+      List<TestColumnDefinition> listAttributes = (List<TestColumnDefinition>)tcd.getValue();
+      Object[] aoAttribute = new Object[listAttributes.size()];
+      for (int i = 0; i < listAttributes.size(); i++)
+      {
+        TestColumnDefinition tad = listAttributes.get(i);
+        if (tad.getValue() instanceof List<?>)
+          aoAttribute[i] = createStruct(tad);
+        else
+          aoAttribute[i] = tad.getValue();
+      }
+      struct = getResultSet().getStatement().getConnection().createStruct(tcd.getType(), aoAttribute);
+      return struct;
+    } /* createStruct */
+    
   @Test
-  public void testInsertRowComplex() throws SQLException
+  public void testInsertRowSqlComplex() throws SQLException
   {
     enter();
     try 
@@ -2449,6 +2491,7 @@ public class OracleResultSetTester
       assertEquals("Insert of "+tcd.getType()+" failed!",
         ((Integer)tcd.getValue()).intValue(),
         getResultSet().getInt(tcd.getName()));
+      
       tcd = findColumnDefinition(_listCdComplex,"CUDT");
       struct = (Struct)getResultSet().getObject(tcd.getName()); 
       assertTrue("Insert of "+tcd.getType()+" failed!",
@@ -2460,6 +2503,90 @@ public class OracleResultSetTester
     }
     catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
     catch(ParseException pe) { fail(EU.getExceptionMessage(pe)); }
-  } /* testInsertRowComplex */
+  } /* testInsertRowSqlComplex */
+
+  private Array createArray(TestColumnDefinition tcd)
+    throws SQLException
+  {
+    Array array = null;
+    @SuppressWarnings("unchecked")
+    List<TestColumnDefinition> listElements = (List<TestColumnDefinition>)tcd.getValue();
+    String sTypeName = null;
+    Object[] aoElement = new Object[listElements.size()];
+    for (int i = 0; i < listElements.size(); i++)
+    {
+      TestColumnDefinition tcdElement = listElements.get(i);
+      aoElement[i] = tcdElement.getValue();
+      sTypeName = tcdElement.getType();
+    }
+    array = getResultSet().getStatement().getConnection().createArrayOf(sTypeName, aoElement);
+    return array;
+  }
+
+  @Test
+  public void testInsertRowNativeComplex()
+  {
+    enter();
+    try
+    {
+      // no foreign key constraint ...
+      openResultSet(getResultSet().getStatement().getConnection(),_sNativeQueryComplex);
+      
+      getResultSet().moveToInsertRow();
+      TestColumnDefinition tcd = findColumnDefinition(_listCdNativeComplex,"CID");
+      getResultSet().updateInt(tcd.getName(),((Integer)tcd.getValue()).intValue());
+      
+      tcd = findColumnDefinition(_listCdNativeComplex,"CUDT_VARRAY");
+      Array array = createArray(tcd); 
+      getResultSet().updateObject(tcd.getName(), array);
+      
+      tcd = findColumnDefinition(_listCdNativeComplex,"CUDT_OBJECT");
+      Struct struct = createStruct(tcd); 
+      getResultSet().updateObject(tcd.getName(), struct);
+
+      /*** Stupid Oracle JDBC cannot handle recursive createStruct
+      tcd = findColumnDefinition(_listCdNativeComplex,"CUDT_COMPLEX");
+      struct = createStruct(tcd); 
+      getResultSet().updateObject(tcd.getName(), struct);
+      ***/
+      
+      getResultSet().insertRow();
+      getResultSet().moveToCurrentRow();
+      
+      openResultSet(getResultSet().getStatement().getConnection(),_sNativeQueryComplex);
+      tcd = findColumnDefinition(_listCdNativeComplex,"CID");
+      while ((getResultSet().getInt(tcd.getName()) != ((Integer)tcd.getValue()).intValue()) && 
+        getResultSet().next()) {}
+      
+      tcd = findColumnDefinition(_listCdNativeComplex,"CID");
+      assertEquals("Insert of "+tcd.getType()+" failed!",
+        ((Integer)tcd.getValue()).intValue(),
+        getResultSet().getInt(tcd.getName()));
+      
+      tcd = findColumnDefinition(_listCdNativeComplex,"CUDT_VARRAY");
+      array = (Array)getResultSet().getObject(tcd.getName()); 
+      assertTrue("Insert of "+tcd.getType()+" failed!",
+        equalsArrayValue(array, _listCdArray));
+
+      tcd = findColumnDefinition(_listCdNativeComplex,"CUDT_OBJECT");
+      struct = (Struct)getResultSet().getObject(tcd.getName()); 
+      assertTrue("Insert of "+tcd.getType()+" failed!",
+        equalsStructValue(struct, _listAdObject));
+
+      /***
+      tcd = findColumnDefinition(_listCdNativeComplex,"CUDT_COMPLEX");
+      struct = (Struct)getResultSet().getObject(tcd.getName()); 
+      assertTrue("Insert of "+tcd.getType()+" failed!",
+        equalsStructValue(struct, _listAdNativeComplex));
+      ***/
+      // restore the database
+      tearDown();
+      setUpClass();
+      setUp();
+      
+    }
+    catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
+    catch(ParseException pe) { fail(EU.getExceptionMessage(pe)); }
+  } /* testGetObjectNativeComplex */
   
 }

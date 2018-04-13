@@ -10,7 +10,7 @@
 	<classpathentry kind="lib" path="lib/antlr-runtime-4.5.2.jar"/>
 	<classpathentry kind="lib" path="lib/enterutils.jar"/>
 	<classpathentry kind="lib" path="lib/jdbcbase-test.jar" sourcepath="/JdbcBase/test"/>
-	<classpathentry kind="lib" path="lib/jdbcbase.jar"/>
+	<classpathentry kind="lib" path="lib/jdbcbase.jar" sourcepath="/JdbcBase/src"/>
 	<classpathentry kind="lib" path="lib/sqlparser.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>

@@ -17,6 +17,7 @@ import ch.enterag.sqlparser.*;
 import ch.enterag.sqlparser.datatype.*;
 import ch.enterag.sqlparser.identifier.*;
 import ch.admin.bar.siard2.oracle.*;
+import ch.admin.bar.siard2.jdbc.*;
 
 public class OracleDataType
   extends DataType
@@ -36,7 +37,8 @@ public class OracleDataType
     try
     {
       OracleSqlFactory osf = (OracleSqlFactory)getSqlFactory();
-      QualifiedId qiVarray = osf.getConnection().findOrCreateVarray(sBaseType,iLength);
+      OracleArray oa = (OracleArray)(osf.getConnection().createArrayOf(sBaseType, new Object[iLength]));
+      QualifiedId qiVarray = oa.findOrCreateVarray(sBaseType,iLength);
       sDataType = qiVarray.quote();
     }
     catch (SQLException se) { throw new IllegalArgumentException(se); }

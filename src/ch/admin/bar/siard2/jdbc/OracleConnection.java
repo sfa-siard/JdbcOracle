@@ -12,13 +12,11 @@ package ch.admin.bar.siard2.jdbc;
 
 import java.io.*;
 import java.sql.*;
-import java.text.*;
 import java.util.*;
 import java.util.concurrent.*;
 import ch.enterag.utils.logging.*;
 import ch.enterag.utils.jdbc.*;
 import ch.enterag.sqlparser.*;
-import ch.enterag.sqlparser.identifier.*;
 import ch.admin.bar.siard2.oracle.*;
 import oracle.jdbc.driver.*;
 
@@ -622,164 +620,11 @@ public class OracleConnection extends BaseConnection implements Connection {
 		return propClientInfo;
 	} /* getClientInfo */
 
-  /*------------------------------------------------------------------*/
-	/** match the token to the beginning of the text and return
-	 * the text shortened by the token's length, if it matches.
-	 * @param sText text.
-	 * @param sToken token to be matched.
-	 * @return shortened text if they match, null if they don't.
-	 */
-  private String matchToken(String sText, String sToken)
-  {
-    String sMatch = sText.substring(0,sToken.length());
-    if (sMatch.equalsIgnoreCase(sToken))
-      sText = sText.substring(sToken.length()).trim();
-    else
-      sText = null;
-    return sText;
-  } /* matchToken */
-  
-  /*------------------------------------------------------------------*/
-  /** check, whether the source text of the type definition matches the 
-   * base type and the length.
-   * @param sText source text.
-   * @param sBaseType full base type.
-   * @param iLength cardinality of VARRAY
-   * @return true, if the source text matches the base type and the cardinality.
-   */
-  private boolean matchesText(String sText, String sBaseType, int iLength)
-  {
-    boolean bMatch = false;
-    sText = sText.trim();
-    try
-    {
-      sText = matchToken(sText,"TYPE");
-      if (sText != null)
-      {
-        String sToken = SqlLiterals.parseIdPrefix(sText);
-        sText = sText.substring(sToken.length()).trim();
-        if (sText.startsWith("."))
-        {
-          sText = sText.substring(1);
-          sToken = SqlLiterals.parseIdPrefix(sText);
-          sText = sText.substring(sToken.length()).trim();
-        }
-        sText = matchToken(sText,"AS");
-        if (sText != null)
-        {
-          sText = matchToken(sText,"VARRAY");
-          if (sText != null)
-          {
-            if (sText.startsWith("("))
-            {
-              int i = sText.indexOf(')');
-              if (i > 1)
-              {
-                String sNumber = sText.substring(1,i);
-                if (Long.parseLong(sNumber) == (long)iLength)
-                {
-                  sText = sText.substring(i+1).trim();
-                  sText = matchToken(sText,"OF");
-                  if (sBaseType.equalsIgnoreCase(sText))
-                    bMatch = true;
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    catch (ParseException pe) {}
-    return bMatch;
-  } /* matchesText */
-  
-  /*------------------------------------------------------------------*/
-	/** find or create an VARRAY type for the given base type and length
-	 * to which the PUBLIC has EXECUTE privileges.
-	 * @param sBaseType full base type (e.g. "VARCHAR(255)")
-	 * @param iLength cardinality of the array.
-	 * @return type name of the VARRAY.
-	 */
-	public QualifiedId findOrCreateVarray(String sBaseType, int iLength)
-	  throws SQLException
-	{
-	  _il.enter(sBaseType,String.valueOf(iLength));
-	  QualifiedId qiVarray = null;
-    /* search for a data type with this base type and this length */
-    String sSql = "SELECT\r\n" +
-                  " T.OWNER AS OWNER,\r\n" +
-                  " T.TYPE_NAME AS TYPE_NAME,\r\n" +
-                  " S.TEXT AS TEXT\r\n" +
-                  "FROM ALL_TYPES T, ALL_SOURCE S, ALL_TAB_PRIVS P\r\n" +
-                  "WHERE T.TYPECODE = 'COLLECTION'\r\n" +
-                  " AND T.OWNER = S.OWNER\r\n" +
-                  " AND T.TYPE_NAME = S.NAME\r\n" +
-                  " AND P.TABLE_SCHEMA = T.OWNER\r\n" +
-                  " AND P.TABLE_NAME = T.TYPE_NAME\r\n" +
-                  " AND P.PRIVILEGE = 'EXECUTE'\r\n" +
-                  " AND P.GRANTEE = 'PUBLIC'\r\n" +
-                  " AND S.TEXT LIKE 'TYPE%VARRAY(%)%OF%'";
-    
-    Statement stmt = createStatement();
-    _il.event("Unwrapped query: "+sSql);
-    ResultSet rs = stmt.unwrap(Statement.class).executeQuery(sSql);
-    while ((qiVarray == null) && rs.next())
-    {
-      String sSchema = rs.getString("OWNER");
-      String sTypeName = rs.getString("TYPE_NAME");
-      String sText = rs.getString("TEXT");
-      if (matchesText(sText,sBaseType,iLength))
-        qiVarray = new QualifiedId(null,sSchema,sTypeName);
-    }
-    rs.close();
-    if (qiVarray == null)
-    {
-      String sVarrayType = null;
-      sVarrayType = sBaseType.replace(" ", "").replace('(', '_').replace(')', '_').replace(',', '_');
-      /***
-      int iParen = sBaseType.indexOf('(');
-      if (iParen >= 0)
-        sVarrayType = sBaseType.substring(0,iParen).trim();
-      ***/
-      sVarrayType = sVarrayType +"_"+String.valueOf(iLength) + "_V";
-      qiVarray = new QualifiedId(null,getMetaData().getUserName(),sVarrayType);
-      
-      StringBuilder sbSql = new StringBuilder();
-      sbSql.append("CREATE TYPE ");
-      sbSql.append(qiVarray.quote());
-      sbSql.append(" AS VARRAY(");
-      sbSql.append(String.valueOf(iLength));
-      sbSql.append(") OF ");
-      sbSql.append(sBaseType);
-      stmt = createStatement();
-      _il.event("Unwrapped query: "+sbSql.toString());
-      int iReturn = stmt.unwrap(Statement.class).executeUpdate(sbSql.toString());
-      if (iReturn != 0)
-        throw new IllegalArgumentException("CREATE TYPE failed!");
-      
-      sbSql = new StringBuilder();
-      sbSql.append("GRANT EXECUTE ON ");
-      sbSql.append(qiVarray.quote());
-      sbSql.append(" TO PUBLIC");
-      stmt = createStatement();
-      iReturn = stmt.unwrap(Statement.class).executeUpdate(sbSql.toString());
-      if (iReturn != 0)
-        throw new IllegalArgumentException("CREATE TYPE failed!");
-    }
-    _il.exit(qiVarray);
-    return qiVarray;
-	} /* findOrCreateVarray */
-	
 	/*------------------------------------------------------------------*/
 	/** {@inheritDoc} */
-	@SuppressWarnings("deprecation")
   @Override
 	public Array createArrayOf(String typeName, Object[] elements) throws SQLException {
-    Array array = null;
-    QualifiedId qiVarray = findOrCreateVarray(typeName,elements.length);
-    oracle.sql.ARRAY oarray = ((oracle.jdbc.OracleConnection)unwrap(Connection.class)).
-      createARRAY(qiVarray.format(), elements);
-    array = new OracleArray(oarray,typeName);
+    Array array = new OracleArray(this,typeName,elements);
 		return array;
 	} /* createArrayOf */
 
