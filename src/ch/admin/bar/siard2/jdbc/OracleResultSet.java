@@ -282,7 +282,7 @@ public class OracleResultSet
         _oLongValue = rsWrapped.getObject(_iLongColumnIndex);
       }
       else
-        throw new SQLException("LONG values can only be read, if the result set is not open read-only!");
+        throw new SQLException("LONG values can only be read, if the result set is not open forward-only!");
     }
   } /* getLongValue */
   
