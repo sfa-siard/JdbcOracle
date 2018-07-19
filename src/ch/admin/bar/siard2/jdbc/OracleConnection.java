@@ -75,7 +75,8 @@ public class OracleConnection extends BaseConnection implements Connection {
 	@Override
 	public Statement createStatement() throws SQLException 
 	{
-		Statement stmt = new OracleStatement(super.createStatement());
+	  /* overwrite TYPE_FORWARD_ONLY so that we can read LONG values */
+		Statement stmt = new OracleStatement(super.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_READ_ONLY));
 		return stmt;
 	} /* createStatement */
 
@@ -299,7 +300,11 @@ public class OracleConnection extends BaseConnection implements Connection {
 	@Override
 	public Statement createStatement(int resultSetType, int resultSetConcurrency) throws SQLException {
 		Statement stmt = null;
-		try {
+		try
+		{
+		  /* Overwrite TYPE_FORWARD_ONLY so that we can read LONG values */
+		  if (resultSetType == ResultSet.TYPE_FORWARD_ONLY)
+		    resultSetType = ResultSet.TYPE_SCROLL_SENSITIVE;
 			stmt = new OracleStatement(super.createStatement(resultSetType, resultSetConcurrency));
 		} catch (OracleSQLException ose) {
 			throwSqlException(ose);
@@ -440,7 +445,11 @@ public class OracleConnection extends BaseConnection implements Connection {
 	public Statement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability)
 			throws SQLException {
 		Statement stmt = null;
-		try {
+		try 
+		{
+      /* Overwrite TYPE_FORWARD_ONLY so that we can read LONG values */
+      if (resultSetType == ResultSet.TYPE_FORWARD_ONLY)
+        resultSetType = ResultSet.TYPE_SCROLL_SENSITIVE;
 			stmt = new OracleStatement(
 					super.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability));
 		} catch (OracleSQLException ose) {
