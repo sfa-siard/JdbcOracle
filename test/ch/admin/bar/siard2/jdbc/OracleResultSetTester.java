@@ -213,11 +213,18 @@ public class OracleResultSetTester
     return conn;
   } /* closeResultSet */
   
-  private void openResultSet(Connection conn, String sQuery)
+  private void openResultSet(Connection conn, String sQuery, boolean bUpdatable)
     throws SQLException
   {
     closeResultSet();
-    Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+    int iType = ResultSet.TYPE_FORWARD_ONLY;
+    int iConcurrency = ResultSet.CONCUR_READ_ONLY;
+    if (bUpdatable)
+    {
+      iType = ResultSet.TYPE_SCROLL_SENSITIVE;
+      iConcurrency = ResultSet.CONCUR_UPDATABLE;
+    }
+    Statement stmt = conn.createStatement(iType, iConcurrency);
     long lMsExecuteStart = System.currentTimeMillis();
     ResultSet rs = stmt.executeQuery(sQuery);
     _lMsExecute = _lMsExecute + System.currentTimeMillis() - lMsExecuteStart; 
@@ -239,7 +246,7 @@ public class OracleResultSetTester
 			Connection conn = dsOracle.getConnection();
       _lMsConnect = _lMsConnect + System.currentTimeMillis() - lMsConnectStart;
 			conn.setAutoCommit(false);
-      openResultSet(conn,_sSqlQuerySimple);
+      openResultSet(conn,_sSqlQuerySimple,false);
 		}
 		catch (SQLException se) { fail(se.getClass().getName() + ": " + se.getMessage()); }
 	}
@@ -825,7 +832,7 @@ public class OracleResultSetTester
     enter();
     try
     {
-      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQueryComplex);
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQueryComplex,false);
       TestColumnDefinition tcd = findColumnDefinition(
         TestSqlDatabase._listCdComplex,"CUDT");
       Map<String,Class<?>> map = new HashMap<String,Class<?>>();
@@ -843,7 +850,7 @@ public class OracleResultSetTester
     enter();
     try
     {
-      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple);
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,false);
       for (int iColumn = 0; iColumn < TestSqlDatabase._listCdSimple.size(); iColumn++)
       {
         TestColumnDefinition tcd = TestSqlDatabase._listCdSimple.get(iColumn);
@@ -1069,8 +1076,8 @@ public class OracleResultSetTester
     enter();
     try
     {
-      openResultSet(getResultSet().getStatement().getConnection(),
-        _sNativeQuerySimple);
+      /* needs to be updatable because table has a LONG value */
+      openResultSet(getResultSet().getStatement().getConnection(),_sNativeQuerySimple,true);
       for (int iColumn = 0; iColumn < TestOracleDatabase._listCdSimple.size(); iColumn++)
       {
         TestColumnDefinition tcd = TestOracleDatabase._listCdSimple
@@ -1468,7 +1475,7 @@ public class OracleResultSetTester
     enter();
     try
     {
-      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQueryComplex);
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQueryComplex,false);
       for (int iColumn = 0; iColumn < TestSqlDatabase._listCdComplex.size(); iColumn++)
       {
         TestColumnDefinition tcd = TestSqlDatabase._listCdComplex.get(iColumn);
@@ -1523,7 +1530,7 @@ public class OracleResultSetTester
     enter();
     try
     {
-      openResultSet(getResultSet().getStatement().getConnection(),_sNativeQueryComplex);
+      openResultSet(getResultSet().getStatement().getConnection(),_sNativeQueryComplex,false);
       for (int iColumn = 0; iColumn < TestOracleDatabase._listCdComplex.size(); iColumn++)
       {
         TestColumnDefinition tcd = TestOracleDatabase._listCdComplex.get(iColumn);
@@ -1582,7 +1589,11 @@ public class OracleResultSetTester
   public void testUpdateNull()
   {
     enter();
-    try { getResultSet().updateNull("CCHAR_5"); }
+    try
+    { 
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
+      getResultSet().updateNull("CCHAR_5");
+    }
     catch(SQLFeatureNotSupportedException sfnse) { printExceptionMessage(sfnse); }
     catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
   } /* testUpdateNull */
@@ -1594,6 +1605,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CVARCHAR_255");
       getResultSet().updateString(tcd.getName(),(String)tcd.getValue());
@@ -1608,6 +1620,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CNVARCHAR_127");
       getResultSet().updateNString(tcd.getName(),(String)tcd.getValue());
@@ -1622,6 +1635,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CCLOB_2M");
       Clob clob = getResultSet().getStatement().getConnection().createClob();
@@ -1638,6 +1652,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CCLOB_2M");
       Reader rdr = new StringReader((String)tcd.getValue());
@@ -1653,6 +1668,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CCLOB_2M");
       Reader rdr = new StringReader((String)tcd.getValue());
@@ -1668,6 +1684,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CNCLOB_1M");
       NClob nclob = getResultSet().getStatement().getConnection().createNClob();
@@ -1684,6 +1701,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CNCLOB_1M");
       Reader rdr = new StringReader((String)tcd.getValue());
@@ -1699,6 +1717,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CNCLOB_1M");
       Reader rdr = new StringReader((String)tcd.getValue());
@@ -1715,6 +1734,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CXML");
       SQLXML sqlxml = getResultSet().getStatement().getConnection().createSQLXML();
@@ -1731,6 +1751,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CVARBINARY_255");
       getResultSet().updateBytes(tcd.getName(),(byte[])tcd.getValue());
@@ -1745,6 +1766,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CBLOB");
       Blob blob = getResultSet().getStatement().getConnection().createBlob();
@@ -1761,6 +1783,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CBLOB");
       InputStream is = new ByteArrayInputStream((byte[])tcd.getValue());
@@ -1776,6 +1799,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CBLOB");
       InputStream is = new ByteArrayInputStream((byte[])tcd.getValue());
@@ -1791,6 +1815,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CDECIMAL_15_5");
       getResultSet().updateBigDecimal(tcd.getName(),(BigDecimal)tcd.getValue());
@@ -1805,6 +1830,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CBOOLEAN");
       getResultSet().updateByte(tcd.getName(),((Boolean)tcd.getValue()).booleanValue()?(byte)1:(byte)0);
@@ -1819,6 +1845,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CSMALLINT");
       getResultSet().updateShort(tcd.getName(),((Short)tcd.getValue()).shortValue());
@@ -1833,6 +1860,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CINTEGER");
       getResultSet().updateInt(tcd.getName(),((Integer)tcd.getValue()).intValue());
@@ -1847,6 +1875,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(_listCdSimple,"CBIGINT");
       getResultSet().updateLong(tcd.getName(),((Long)tcd.getValue()).longValue());
     }
@@ -1860,6 +1889,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CREAL");
       getResultSet().updateFloat(tcd.getName(),((Float)tcd.getValue()).floatValue());
@@ -1874,6 +1904,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CDOUBLE");
       getResultSet().updateDouble(tcd.getName(),((Double)tcd.getValue()).doubleValue());
@@ -1888,6 +1919,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CBOOLEAN");
       getResultSet().updateBoolean(tcd.getName(),((Boolean)tcd.getValue()).booleanValue());
@@ -1902,6 +1934,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CDATE");
       getResultSet().updateDate(tcd.getName(),(Date)tcd.getValue());
@@ -1916,6 +1949,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CTIME");
       getResultSet().updateTime(tcd.getName(),(Time)tcd.getValue());
@@ -1930,6 +1964,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CTIMESTAMP");
       getResultSet().updateTimestamp(tcd.getName(),(Timestamp)tcd.getValue());
@@ -1943,6 +1978,7 @@ public class OracleResultSetTester
     enter();
     try 
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CINTERVAL_DAY_2_SECONDS_6");
       getBaseResultSet().updateDuration(tcd.getName(), ((Interval)tcd.getValue()).toDuration());
@@ -1958,6 +1994,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CVARCHAR_255");
       InputStream is = new ByteArrayInputStream(((String)tcd.getValue()).getBytes());
@@ -1973,6 +2010,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CVARCHAR_255");
       InputStream is = new ByteArrayInputStream(((String)tcd.getValue()).getBytes());
@@ -1988,6 +2026,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CVARCHAR_255");
       InputStream is = new ByteArrayInputStream(((String)tcd.getValue()).getBytes());
@@ -2003,6 +2042,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CVARCHAR_255");
       Reader rdr = new StringReader((String)tcd.getValue());
@@ -2018,6 +2058,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CVARCHAR_255");
       Reader rdr = new StringReader((String)tcd.getValue());
@@ -2033,6 +2074,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CVARCHAR_255");
       Reader rdr = new StringReader((String)tcd.getValue());
@@ -2048,6 +2090,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CNVARCHAR_127");
       Reader rdr = new StringReader((String)tcd.getValue());
@@ -2063,6 +2106,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CNVARCHAR_127");
       Reader rdr = new StringReader((String)tcd.getValue());
@@ -2078,6 +2122,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CNVARCHAR_127");
       Reader rdr = new StringReader((String)tcd.getValue());
@@ -2093,6 +2138,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CVARBINARY_255");
       InputStream is = new ByteArrayInputStream((byte[])tcd.getValue());
@@ -2108,6 +2154,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CVARBINARY_255");
       InputStream is = new ByteArrayInputStream((byte[])tcd.getValue());
@@ -2123,6 +2170,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CVARBINARY_255");
       InputStream is = new ByteArrayInputStream((byte[])tcd.getValue());
@@ -2160,6 +2208,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CDATE");
       getResultSet().updateObject(tcd.getName(),tcd.getValue());
@@ -2174,6 +2223,7 @@ public class OracleResultSetTester
     enter();
     try
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CDECIMAL_15_5");
       getResultSet().updateObject(tcd.getName(),tcd.getValue(),3);
@@ -2186,7 +2236,11 @@ public class OracleResultSetTester
   public void testRefreshRow() throws SQLException
   {
     enter();
-    try { getResultSet().refreshRow(); }
+    try 
+    { 
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
+      getResultSet().refreshRow();
+    }
     catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
   } /* refreshRow */
 
@@ -2198,7 +2252,7 @@ public class OracleResultSetTester
     try 
     {
       // cannot delete row in simple table because of foreign key
-      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQueryComplex);
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQueryComplex,true);
       getResultSet().deleteRow();
       // restore the database
       tearDown();
@@ -2217,7 +2271,7 @@ public class OracleResultSetTester
     { 
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CXML");
-      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple);
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       SQLXML sqlxml = getResultSet().getStatement().getConnection().createSQLXML();
       sqlxml.setString("<a>Konrad Zuse</a>");
       getResultSet().updateSQLXML(tcd.getName(), sqlxml);
@@ -2238,6 +2292,7 @@ public class OracleResultSetTester
     enter();
     try 
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       getResultSet().moveToInsertRow();
       TestColumnDefinition tcd = findColumnDefinition(
         _listCdSimple,"CINTEGER");
@@ -2257,7 +2312,7 @@ public class OracleResultSetTester
     enter();
     try 
     {
-      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple);
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       getResultSet().moveToInsertRow();
       TestColumnDefinition tcd = findColumnDefinition(_listCdSimple,"CCHAR_5");
       getResultSet().updateString(tcd.getName(),(String)tcd.getValue());
@@ -2318,7 +2373,7 @@ public class OracleResultSetTester
       getResultSet().insertRow();
       getResultSet().moveToCurrentRow();
       
-      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple);
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,false);
       tcd = findColumnDefinition(
         _listCdSimple,"CINTEGER");
       while ((getResultSet().getInt(tcd.getName()) != ((Integer)tcd.getValue()).intValue()) && 
@@ -2462,6 +2517,7 @@ public class OracleResultSetTester
     enter();
     try 
     {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
       // needed for foreign key constraint ...
       getResultSet().moveToInsertRow();
       TestColumnDefinition tcd = findColumnDefinition(
@@ -2470,7 +2526,7 @@ public class OracleResultSetTester
       getResultSet().insertRow();
       getResultSet().moveToCurrentRow();
 
-      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQueryComplex);
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQueryComplex,true);
       getResultSet().moveToInsertRow();
       tcd = findColumnDefinition(_listCdComplex,"CID");
       getResultSet().updateInt(tcd.getName(),((Integer)tcd.getValue()).intValue());
@@ -2482,7 +2538,7 @@ public class OracleResultSetTester
       getResultSet().insertRow();
       getResultSet().moveToCurrentRow();
       
-      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQueryComplex);
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQueryComplex,false);
       tcd = findColumnDefinition(_listCdComplex,"CID");
       while ((getResultSet().getInt(tcd.getName()) != ((Integer)tcd.getValue()).intValue()) && 
         getResultSet().next()) {}
@@ -2530,7 +2586,7 @@ public class OracleResultSetTester
     try
     {
       // no foreign key constraint ...
-      openResultSet(getResultSet().getStatement().getConnection(),_sNativeQueryComplex);
+      openResultSet(getResultSet().getStatement().getConnection(),_sNativeQueryComplex,true);
       
       getResultSet().moveToInsertRow();
       TestColumnDefinition tcd = findColumnDefinition(_listCdNativeComplex,"CID");
@@ -2553,7 +2609,7 @@ public class OracleResultSetTester
       getResultSet().insertRow();
       getResultSet().moveToCurrentRow();
       
-      openResultSet(getResultSet().getStatement().getConnection(),_sNativeQueryComplex);
+      openResultSet(getResultSet().getStatement().getConnection(),_sNativeQueryComplex,false);
       tcd = findColumnDefinition(_listCdNativeComplex,"CID");
       while ((getResultSet().getInt(tcd.getName()) != ((Integer)tcd.getValue()).intValue()) && 
         getResultSet().next()) {}
@@ -2589,4 +2645,167 @@ public class OracleResultSetTester
     catch(ParseException pe) { fail(EU.getExceptionMessage(pe)); }
   } /* testGetObjectNativeComplex */
   
+  @Override
+  @Test
+  public void testAbsolute()
+  {
+    enter();
+    try
+    {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
+      getResultSet().absolute(1);
+    }
+    catch(SQLFeatureNotSupportedException sfnse) { printExceptionMessage(sfnse); }
+    catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
+  } /* testAbsolute */
+  
+  @Override
+  @Test
+  public void testRelative()
+  {
+    enter();
+    try
+    {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
+      getResultSet().relative(1);
+    }
+    catch(SQLFeatureNotSupportedException sfnse) { printExceptionMessage(sfnse); }
+    catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
+  } /* testRelative */
+  
+  @Override
+  @Test
+  public void testPrevious()
+  {
+    enter();
+    try 
+    {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
+      getResultSet().next();
+      getResultSet().previous();
+    }
+    catch(SQLFeatureNotSupportedException sfnse) { printExceptionMessage(sfnse); }
+    catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
+  } /* testPrevious */
+  
+  @Override
+  @Test
+  public void testFirst()
+  {
+    enter();
+    try
+    {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
+      getResultSet().first();
+    }
+    catch(SQLFeatureNotSupportedException sfnse) { printExceptionMessage(sfnse); }
+    catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
+  } /* testFirst */
+  
+  @Override
+  @Test
+  public void testLast()
+  {
+    enter();
+    try
+    {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
+      getResultSet().last();
+    }
+    catch(SQLFeatureNotSupportedException sfnse) { printExceptionMessage(sfnse); }
+    catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
+  } /* testLast */
+  
+  @Override
+  @Test
+  public void testNext()
+  {
+    enter();
+    try { getResultSet().next(); }
+    catch(SQLFeatureNotSupportedException sfnse) { printExceptionMessage(sfnse); }
+    catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
+  } /* testPrevious */
+  
+  @Override
+  @Test
+  public void testMoveToInsertRow() throws SQLException
+  {
+    enter();
+    try
+    {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
+      getResultSet().moveToInsertRow();
+    }
+    catch(SQLFeatureNotSupportedException sfnse) { printExceptionMessage(sfnse); }
+    catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
+  } /* testMoveToInsertRow */
+
+  @Override
+  @Test
+  public void testMoveToCurrentRow() throws SQLException
+  {
+    enter();
+    try
+    {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
+      getResultSet().moveToCurrentRow();
+    }
+    catch(SQLFeatureNotSupportedException sfnse) { printExceptionMessage(sfnse); }
+    catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
+  } /* testMoveToCurrentRow */
+  
+  @Override
+  @Test
+  public void testBeforeFirst()
+  {
+    enter();
+    try 
+    { 
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
+      getResultSet().beforeFirst();
+    }
+    catch(SQLFeatureNotSupportedException sfnse) { printExceptionMessage(sfnse); }
+    catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
+  } /* testBeforeFirst */
+  
+  @Override
+  @Test
+  public void testIsLast()
+  {
+    enter();
+    try 
+    { 
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
+      getResultSet().isLast();
+    }
+    catch(SQLFeatureNotSupportedException sfnse) { printExceptionMessage(sfnse); }
+    catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
+  } /* testIsLast */
+  
+  @Override
+  @Test
+  public void testAfterLast()
+  {
+    enter();
+    try
+    {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
+      getResultSet().afterLast();
+    }
+    catch(SQLFeatureNotSupportedException sfnse) { printExceptionMessage(sfnse); }
+    catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
+  } /* testAfterLast */
+  
+  @Override
+  @Test
+  public void testCancelRowUpdates() throws SQLException
+  {
+    enter();
+    try 
+    {
+      openResultSet(getResultSet().getStatement().getConnection(),_sSqlQuerySimple,true);
+      getResultSet().cancelRowUpdates(); 
+    }
+    catch(SQLFeatureNotSupportedException sfnse) { System.out.println(EU.getExceptionMessage(sfnse)); }
+  } /* testCancelRowUpdates */
 }
