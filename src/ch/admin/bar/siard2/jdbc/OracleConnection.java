@@ -85,7 +85,7 @@ public class OracleConnection extends BaseConnection implements Connection {
 	@Override
 	public PreparedStatement prepareStatement(String sql) throws SQLException 
 	{
-		PreparedStatement ps = super.prepareStatement(nativeSQL(sql));
+		PreparedStatement ps = super.prepareStatement(nativeSQL(sql),ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_READ_ONLY);
 		return ps;
 	} /* prepareStatement */
 
@@ -318,7 +318,10 @@ public class OracleConnection extends BaseConnection implements Connection {
 	public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency)
 			throws SQLException {
 		PreparedStatement ps = null;
-		try {
+		try 
+		{
+		  if (resultSetType == ResultSet.TYPE_FORWARD_ONLY)
+		    resultSetType = ResultSet.TYPE_SCROLL_SENSITIVE;
 			ps = super.prepareStatement(nativeSQL(sql), resultSetType, resultSetConcurrency);
 		} catch (OracleSQLException ose) {
 			throwSqlException(ose);
@@ -464,7 +467,10 @@ public class OracleConnection extends BaseConnection implements Connection {
 	public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency,
 			int resultSetHoldability) throws SQLException {
 		PreparedStatement ps = null;
-		try {
+		try 
+		{
+      if (resultSetType == ResultSet.TYPE_FORWARD_ONLY)
+        resultSetType = ResultSet.TYPE_SCROLL_SENSITIVE;
 			ps = super.prepareStatement(nativeSQL(sql), resultSetType, resultSetConcurrency, resultSetHoldability);
 		} catch (OracleSQLException ose) {
 			throwNotSupportedException(ose);
