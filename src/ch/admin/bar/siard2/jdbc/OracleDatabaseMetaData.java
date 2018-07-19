@@ -386,7 +386,7 @@ public class OracleDatabaseMetaData
     ResultSet rsColumns = null;
     Connection conn = getConnection();
     _il.event("Unwrapped prepared query: "+sSql);
-    PreparedStatement pstmt = conn.prepareStatement(sSql);
+    PreparedStatement pstmt = conn.unwrap(Connection.class).prepareStatement(sSql,ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_READ_ONLY);
     rsColumns = new OracleMetaColumns(pstmt.executeQuery(),conn,1,2,5,6,7,7,9);
     _il.exit(rsColumns);
     return rsColumns;
@@ -996,7 +996,7 @@ public class OracleDatabaseMetaData
     ResultSet rsTables = null;
     Connection conn = getConnection();
     _il.event("Unwrapped prepared query: "+sbSql.toString());
-    PreparedStatement pstmt = conn.prepareStatement(sbSql.toString());
+    PreparedStatement pstmt = conn.unwrap(Connection.class).prepareStatement(sSql,ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_READ_ONLY);
     rsTables = pstmt.executeQuery();
     rsTables = new OracleResultSet(rsTables,conn);
     _il.exit(rsTables);
