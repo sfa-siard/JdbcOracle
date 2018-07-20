@@ -11,6 +11,6 @@
 	<classpathentry kind="lib" path="lib/enterutils.jar"/>
 	<classpathentry kind="lib" path="lib/jdbcbase-test.jar" sourcepath="/JdbcBase/test"/>
 	<classpathentry kind="lib" path="lib/jdbcbase.jar" sourcepath="/JdbcBase/src"/>
-	<classpathentry kind="lib" path="lib/sqlparser.jar"/>
+	<classpathentry kind="lib" path="lib/sqlparser.jar" sourcepath="/SqlParser/src"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>

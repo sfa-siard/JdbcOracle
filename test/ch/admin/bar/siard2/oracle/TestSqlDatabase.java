@@ -198,7 +198,7 @@ public class TestSqlDatabase
   {
     try
     {
-      Statement stmt = _conn.createStatement();
+      Statement stmt = _conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
       stmt.executeUpdate(sSql);
       stmt.close();
       _conn.commit();
@@ -222,7 +222,7 @@ public class TestSqlDatabase
   {
       CreateSchemaStatement css = _sf.newCreateSchemaStatement();
       css.initialize(new SchemaId(null,_sTEST_SCHEMA), new Identifier(_sTestUser));
-      Statement stmt = _conn.createStatement();
+      Statement stmt = _conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
       int iResult = stmt.executeUpdate(css.format());
       if (iResult != 0)
         throw new SQLException("Create schema "+_sTEST_SCHEMA+" failed!");
@@ -454,7 +454,7 @@ public class TestSqlDatabase
   private void executeCreate(String sSql)
     throws SQLException
   {
-    Statement stmt = _conn.createStatement();
+    Statement stmt = _conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
     int iResult = stmt.executeUpdate(sSql);
     if (iResult != 0)
       throw new SQLException(sSql + " failed!");

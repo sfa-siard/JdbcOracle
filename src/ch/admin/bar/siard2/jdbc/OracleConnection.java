@@ -75,8 +75,7 @@ public class OracleConnection extends BaseConnection implements Connection {
 	@Override
 	public Statement createStatement() throws SQLException 
 	{
-	  /* overwrite TYPE_FORWARD_ONLY so that we can read LONG values */
-		Statement stmt = new OracleStatement(super.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_READ_ONLY));
+		Statement stmt = new OracleStatement(super.createStatement());
 		return stmt;
 	} /* createStatement */
 
@@ -85,7 +84,7 @@ public class OracleConnection extends BaseConnection implements Connection {
 	@Override
 	public PreparedStatement prepareStatement(String sql) throws SQLException 
 	{
-		PreparedStatement ps = super.prepareStatement(nativeSQL(sql),ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_READ_ONLY);
+		PreparedStatement ps = super.prepareStatement(nativeSQL(sql));
 		return ps;
 	} /* prepareStatement */
 
@@ -302,9 +301,6 @@ public class OracleConnection extends BaseConnection implements Connection {
 		Statement stmt = null;
 		try
 		{
-		  /* Overwrite TYPE_FORWARD_ONLY so that we can read LONG values */
-		  if (resultSetType == ResultSet.TYPE_FORWARD_ONLY)
-		    resultSetType = ResultSet.TYPE_SCROLL_SENSITIVE;
 			stmt = new OracleStatement(super.createStatement(resultSetType, resultSetConcurrency));
 		} catch (OracleSQLException ose) {
 			throwSqlException(ose);
@@ -320,8 +316,6 @@ public class OracleConnection extends BaseConnection implements Connection {
 		PreparedStatement ps = null;
 		try 
 		{
-		  if (resultSetType == ResultSet.TYPE_FORWARD_ONLY)
-		    resultSetType = ResultSet.TYPE_SCROLL_SENSITIVE;
 			ps = super.prepareStatement(nativeSQL(sql), resultSetType, resultSetConcurrency);
 		} catch (OracleSQLException ose) {
 			throwSqlException(ose);
@@ -450,9 +444,6 @@ public class OracleConnection extends BaseConnection implements Connection {
 		Statement stmt = null;
 		try 
 		{
-      /* Overwrite TYPE_FORWARD_ONLY so that we can read LONG values */
-      if (resultSetType == ResultSet.TYPE_FORWARD_ONLY)
-        resultSetType = ResultSet.TYPE_SCROLL_SENSITIVE;
 			stmt = new OracleStatement(
 					super.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability));
 		} catch (OracleSQLException ose) {
@@ -469,8 +460,6 @@ public class OracleConnection extends BaseConnection implements Connection {
 		PreparedStatement ps = null;
 		try 
 		{
-      if (resultSetType == ResultSet.TYPE_FORWARD_ONLY)
-        resultSetType = ResultSet.TYPE_SCROLL_SENSITIVE;
 			ps = super.prepareStatement(nativeSQL(sql), resultSetType, resultSetConcurrency, resultSetHoldability);
 		} catch (OracleSQLException ose) {
 			throwNotSupportedException(ose);

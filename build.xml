@@ -307,7 +307,7 @@ Created    : 16.06.2016, Simon Jutz
   <!-- create the JAR file containing all tests -->
   <property name="jartest" value="${ant.project.name}-test.jar"/>
   <target name="jartest" depends="tests" if="dbuser">
-    <echo message="${ant.project.name}: jar"/>
+    <echo message="${ant.project.name}: jartest"/>
     <jar jarfile="${dirdist}/${jartest}">
       <fileset dir="${dirbuildtests}">
         <include name="**/*.class"/>
