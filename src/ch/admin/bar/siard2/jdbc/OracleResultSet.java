@@ -276,8 +276,8 @@ public class OracleResultSet
   {
     if (bPositioned && (_iLongColumnIndex > 0))
     {
-      if ((getType() != ResultSet.TYPE_FORWARD_ONLY) ||
-          (getConcurrency() != ResultSet.CONCUR_READ_ONLY))
+      if ((getType() == ResultSet.TYPE_FORWARD_ONLY) ||
+          (getConcurrency() == ResultSet.CONCUR_READ_ONLY))
       {
         ResultSet rsWrapped = unwrap(ResultSet.class);
         _oLongValue = rsWrapped.getObject(_iLongColumnIndex);
