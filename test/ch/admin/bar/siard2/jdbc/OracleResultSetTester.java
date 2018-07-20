@@ -1076,7 +1076,8 @@ public class OracleResultSetTester
     enter();
     try
     {
-      openResultSet(getResultSet().getStatement().getConnection(),_sNativeQuerySimple,false);
+      /* must be updatable, if LONG types are to be read! */
+      openResultSet(getResultSet().getStatement().getConnection(),_sNativeQuerySimple,true);
       for (int iColumn = 0; iColumn < TestOracleDatabase._listCdSimple.size(); iColumn++)
       {
         TestColumnDefinition tcd = TestOracleDatabase._listCdSimple
