@@ -276,13 +276,14 @@ public class OracleResultSet
   {
     if (bPositioned && (_iLongColumnIndex > 0))
     {
-      if (getType() != ResultSet.TYPE_FORWARD_ONLY)
+      if ((getType() != ResultSet.TYPE_FORWARD_ONLY) ||
+          (getConcurrency() != ResultSet.CONCUR_READ_ONLY))
       {
         ResultSet rsWrapped = unwrap(ResultSet.class);
         _oLongValue = rsWrapped.getObject(_iLongColumnIndex);
       }
       else
-        throw new SQLException("LONG values can only be read, if the result set is not open forward-only!");
+        throw new SQLException("LONG values can only be read, if the result set concurrency is read-only!");
     }
   } /* getLongValue */
   

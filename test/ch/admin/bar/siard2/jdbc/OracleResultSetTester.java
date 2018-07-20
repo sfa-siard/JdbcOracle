@@ -221,7 +221,7 @@ public class OracleResultSetTester
     int iConcurrency = ResultSet.CONCUR_READ_ONLY;
     if (bUpdatable)
     {
-      iType = ResultSet.TYPE_SCROLL_SENSITIVE;
+      iType = ResultSet.TYPE_FORWARD_ONLY;
       iConcurrency = ResultSet.CONCUR_UPDATABLE;
     }
     Statement stmt = conn.createStatement(iType, iConcurrency);
