@@ -217,11 +217,11 @@ public class OracleResultSetTester
     throws SQLException
   {
     closeResultSet();
-    int iType = ResultSet.TYPE_FORWARD_ONLY;
+    int iType = ResultSet.TYPE_SCROLL_SENSITIVE;
     int iConcurrency = ResultSet.CONCUR_READ_ONLY;
     if (bUpdatable)
     {
-      iType = ResultSet.TYPE_FORWARD_ONLY;
+      iType = ResultSet.TYPE_SCROLL_SENSITIVE;
       iConcurrency = ResultSet.CONCUR_UPDATABLE;
     }
     Statement stmt = conn.createStatement(iType, iConcurrency);
@@ -1076,8 +1076,7 @@ public class OracleResultSetTester
     enter();
     try
     {
-      /* must be updatable, if LONG types are to be read! */
-      openResultSet(getResultSet().getStatement().getConnection(),_sNativeQuerySimple,true);
+      openResultSet(getResultSet().getStatement().getConnection(),_sNativeQuerySimple,false);
       for (int iColumn = 0; iColumn < TestOracleDatabase._listCdSimple.size(); iColumn++)
       {
         TestColumnDefinition tcd = TestOracleDatabase._listCdSimple
