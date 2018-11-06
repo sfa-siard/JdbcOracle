@@ -18,6 +18,8 @@ public class OracleStatementTester extends BaseStatementTester
   private static final String _sDBA_PASSWORD = _cp.getDbaPassword();
   private static final String _sDB_USER = _cp.getUser();
   private static final String _sDB_PASSWORD = _cp.getPassword();
+  private static final String _sDB_BUG_USER = "buguser";
+  private static final String _sDB_BUG_PASSWORD = "bugpwd";
   private OracleStatement _stmtOracle = null;
 
   private static final String _sSQL_DDL = "CREATE TABLE TESTTABLE(CCHAR CHARACTER,\r\n" +
@@ -246,5 +248,66 @@ public class OracleStatementTester extends BaseStatementTester
     }
     catch(SQLException se) { System.out.println(EU.getExceptionMessage(se)); }
   } /* testExecuteSelectSizes */
+  
+  @Test
+  public void testDownloadLongRaw()
+  {
+    // prepare bug table
+    String sSqlCreate = "CREATE TABLE \"AKTIONSKNOPF\" \r\n" + 
+        " (        \"NUMMER\" NUMBER, \r\n" + 
+        "      \"KLVERSION\" NUMBER(*,0), \r\n" + 
+        "      \"LAUFNUMMER\" NUMBER(*,0), \r\n" + 
+        "      \"SORTIERUNG\" NUMBER(*,0), \r\n" + 
+        "      \"BEZEICHNUNG\" VARCHAR2(64 BYTE), \r\n" + 
+        "      \"MITKNOPF\" NUMBER(*,0), \r\n" + 
+        "      \"MODUL\" VARCHAR2(13 BYTE), \r\n" + 
+        "      \"EXTRADATEN\" LONG RAW, \r\n" + 
+        "      \"KOMMENTAR\" VARCHAR2(2000 BYTE) \r\n"+
+        " )";
+      String sSqlInsert = "INSERT INTO AKTIONSKNOPF \r\n"+
+          " (        \"NUMMER\", \r\n" + 
+          "      \"KLVERSION\", \r\n" + 
+          "      \"LAUFNUMMER\", \r\n" + 
+          "      \"SORTIERUNG\", \r\n" + 
+          "      \"BEZEICHNUNG\", \r\n" + 
+          "      \"MITKNOPF\", \r\n" + 
+          "      \"MODUL\", \r\n" + 
+          "      \"EXTRADATEN\", \r\n" + 
+          "      \"KOMMENTAR\" \r\n"+
+          " ) VALUES \r\n"+
+          "(         1, \r\n"+
+          "      2, \r\n" +
+          "      3, \r\n" +
+          "      675, \r\n" +
+          "      'irgendeine Bezeichnung', \r\n" +
+          "      0, \r\n" +
+          "      '18-00675', \r\n" +
+          "      utl_raw.cast_to_raw('hello world'), \r\n"+
+          "      'irgendein Kommentar' \r\n"+
+          " )";
+    try
+    {
+      OracleDataSource dsOracle = new OracleDataSource();
+      dsOracle.setUrl(_sDB_URL);
+      dsOracle.setUser(_sDB_BUG_USER);
+      dsOracle.setPassword(_sDB_BUG_PASSWORD);
+      OracleConnection connOracle = (OracleConnection)dsOracle.getConnection();
+      connOracle.setAutoCommit(false);
+      Statement stmtOracle = (OracleStatement)connOracle.createStatement();
+      stmtOracle = stmtOracle.unwrap(Statement.class);
+      try 
+      { 
+        stmtOracle.executeUpdate("DELETE FROM AKTIONSKNOPF"); 
+        stmtOracle.executeUpdate("DROP TABLE AKTIONSKNOPF"); 
+      }
+      catch(SQLException se) { System.out.println(EU.getExceptionMessage(se));}
+      int iResult = stmtOracle.executeUpdate(sSqlCreate);
+      assertEquals("Table creation failed!",0,iResult);
+      iResult = stmtOracle.executeUpdate(sSqlInsert);
+      assertEquals("Insert into table failed!",1,iResult);
+      connOracle.commit();
+    }
+    catch (SQLException se) { fail(EU.getExceptionMessage(se)); }
+  }
   
 } /* OracleStatementTester */
