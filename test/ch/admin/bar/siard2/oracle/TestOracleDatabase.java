@@ -270,6 +270,102 @@ public class TestOracleDatabase
       conn.commit();
   } /* grantSchema */
 
+  /*------------------------------------------------------------------*/
+  public static void grantReadSchema(Connection conn, String sSchema, String sTestUser)
+    throws SQLException
+  {
+    Statement stmt = conn.createStatement().unwrap(Statement.class);
+    Map<QualifiedId,String> mapObjectPrivileges = new HashMap<QualifiedId,String>(); 
+    String sSql = "SELECT * FROM ALL_OBJECTS WHERE OWNER = '"+sSchema+"'";
+    ResultSet rs = stmt.executeQuery(sSql);
+    while (rs.next())
+    {
+      String sObject = rs.getString("OBJECT_NAME");
+      QualifiedId qi = new QualifiedId(null,sSchema,sObject);
+      String sObjectType = rs.getString("OBJECT_TYPE");
+      String sPrivileges = null;
+      if (sObjectType.equals("TABLE") || 
+          sObjectType.equals("VIEW") ||
+          sObjectType.equals("TYPE"))
+        sPrivileges = "SELECT";
+      else if (sObjectType.equals("PROCEDURE") || 
+               sObjectType.equals("FUNCTION") || 
+               sObjectType.equals("PACKAGE"))
+        sPrivileges = "EXECUTE";
+      if (sPrivileges != null)
+        mapObjectPrivileges.put(qi,sPrivileges);
+    }
+    rs.close();
+    for (Iterator<QualifiedId> iterObject = mapObjectPrivileges.keySet().iterator(); iterObject.hasNext();)
+    {
+      QualifiedId qiObject = iterObject.next();
+      String sPrivileges = mapObjectPrivileges.get(qiObject);
+      sSql = "GRANT "+sPrivileges+" ON "+qiObject.format()+" TO "+sTestUser;
+      int iReturn = stmt.executeUpdate(sSql);
+      if (iReturn != 0)
+        throw new SQLException("Grant on "+qiObject.format()+" failed!");
+    }
+    /* DIRECTORY entries are not part of a schema but belong all to SYS
+     * nevertheless we need access to out BFILEs! */
+    if (_sBFILE_DIRECTORY != null)
+    {
+      sSql = "GRANT READ ON DIRECTORY "+SqlLiterals.formatId(_sDIRECTORY)+" TO "+sTestUser;
+      int iReturn = stmt.executeUpdate(sSql);
+      if (iReturn != 0)
+        throw new SQLException("Grant on DIRECTORY "+SqlLiterals.formatId(_sDIRECTORY)+" failed!");
+    }
+    stmt.close();
+    if (!conn.getAutoCommit())
+      conn.commit();
+  } /* grantReadSchema */
+
+  /*------------------------------------------------------------------*/
+  public static void grantReadViews(Connection conn, String sSchema, String sTestUser)
+    throws SQLException
+  {
+    Statement stmt = conn.createStatement().unwrap(Statement.class);
+    Map<QualifiedId,String> mapObjectPrivileges = new HashMap<QualifiedId,String>(); 
+    String sSql = "SELECT * FROM ALL_OBJECTS WHERE OWNER = '"+sSchema+"'";
+    ResultSet rs = stmt.executeQuery(sSql);
+    while (rs.next())
+    {
+      String sObject = rs.getString("OBJECT_NAME");
+      QualifiedId qi = new QualifiedId(null,sSchema,sObject);
+      String sObjectType = rs.getString("OBJECT_TYPE");
+      String sPrivileges = null;
+      if (sObjectType.equals("VIEW"))
+        sPrivileges = "SELECT";
+      else if (sObjectType.equals("PROCEDURE") || 
+               sObjectType.equals("FUNCTION") || 
+               sObjectType.equals("PACKAGE"))
+        sPrivileges = "EXECUTE";
+      if (sPrivileges != null)
+        mapObjectPrivileges.put(qi,sPrivileges);
+    }
+    rs.close();
+    for (Iterator<QualifiedId> iterObject = mapObjectPrivileges.keySet().iterator(); iterObject.hasNext();)
+    {
+      QualifiedId qiObject = iterObject.next();
+      String sPrivileges = mapObjectPrivileges.get(qiObject);
+      sSql = "GRANT "+sPrivileges+" ON "+qiObject.format()+" TO "+sTestUser;
+      int iReturn = stmt.executeUpdate(sSql);
+      if (iReturn != 0)
+        throw new SQLException("Grant on "+qiObject.format()+" failed!");
+    }
+    /* DIRECTORY entries are not part of a schema but belong all to SYS
+     * nevertheless we need access to out BFILEs! */
+    if (_sBFILE_DIRECTORY != null)
+    {
+      sSql = "GRANT READ ON DIRECTORY "+SqlLiterals.formatId(_sDIRECTORY)+" TO "+sTestUser;
+      int iReturn = stmt.executeUpdate(sSql);
+      if (iReturn != 0)
+        throw new SQLException("Grant on DIRECTORY "+SqlLiterals.formatId(_sDIRECTORY)+" failed!");
+    }
+    stmt.close();
+    if (!conn.getAutoCommit())
+      conn.commit();
+  } /* grantReadSchema */
+
 	/*------------------------------------------------------------------*/
 	public TestOracleDatabase(OracleConnection connOracle) 
 		throws SQLException 
