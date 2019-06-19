@@ -1,13 +1,11 @@
 package ch.admin.bar.siard2.jdbc;
 
 import java.sql.*;
-import java.text.ParseException;
+import java.text.*;
 import java.util.*;
 import java.util.regex.*;
 import static org.junit.Assert.*;
-
 import org.junit.*;
-
 import ch.enterag.utils.*;
 import ch.enterag.utils.base.*;
 import ch.enterag.utils.jdbc.*;
@@ -428,6 +426,18 @@ public class OracleDatabaseMetaDataTester
   {
       enter();
       try { print(_dmdOracle.getTables(null,TestSqlDatabase._sTEST_SCHEMA,"%",new String[]{"TABLE"})); } 
+      catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
+  }
+
+  @Test
+  public void testGetViews()
+  {
+      enter();
+      try 
+      { 
+        ResultSet rsTables = _dmdOracle.getTables(null,TestSqlDatabase._sTEST_SCHEMA,"%",new String[]{"VIEW"});
+        print(rsTables); 
+      } 
       catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
   }
 

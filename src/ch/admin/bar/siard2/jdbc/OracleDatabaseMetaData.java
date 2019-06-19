@@ -12,8 +12,9 @@ package ch.admin.bar.siard2.jdbc;
 
 import java.sql.*;
 import java.util.*;
+
 import ch.enterag.utils.jdbc.*;
-import ch.enterag.utils.logging.IndentLogger;
+import ch.enterag.utils.logging.*;
 import ch.enterag.sqlparser.*;
 
 /*=====================================================================*/
@@ -386,7 +387,7 @@ public class OracleDatabaseMetaData
     ResultSet rsColumns = null;
     Connection conn = getConnection();
     _il.event("Unwrapped prepared query: "+sSql);
-    PreparedStatement pstmt = conn.unwrap(Connection.class).prepareStatement(sSql,ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_READ_ONLY);
+    PreparedStatement pstmt = conn.unwrap(Connection.class).prepareStatement(sSql,ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY);
     rsColumns = new OracleMetaColumns(pstmt.executeQuery(),conn,1,2,5,6,7,7,9);
     _il.exit(rsColumns);
     return rsColumns;
@@ -832,39 +833,27 @@ public class OracleDatabaseMetaData
     }
     if (types != null)
     {
-      Set<Boolean> setTemporary = new HashSet<Boolean>();
-      Set<Boolean> setSystem = new HashSet<Boolean>();
+      boolean bSystem = false;
+      boolean bTemporary = false;
       Set<String> setObjectTypes = new HashSet<String>();
       for (int iType = 0; iType < types.length; iType++)
       {
         String sType = types[iType];
         if (sType.equals(sTABLE))
-        {
           setObjectTypes.add(sTABLE);
-          setSystem.add(Boolean.FALSE);
-          setTemporary.add(Boolean.FALSE);
-        }
         else if (sType.equals(sVIEW))
-        {
           setObjectTypes.add(sVIEW);
-          setSystem.add(Boolean.FALSE);
-        }
         else if (sType.equals(sSYNONYM))
-        {
           setObjectTypes.add(sSYNONYM);
-          setSystem.add(Boolean.FALSE);
-        }
         else if (sType.equals(sGLOBAL_TEMPORARY))
         {
           setObjectTypes.add(sTABLE);
-          setSystem.add(Boolean.FALSE);
-          setTemporary.add(Boolean.TRUE);
+          bTemporary = true;
         }
         else if (sType.equals(sSYSTEM_TABLE))
         {
           setObjectTypes.add(sTABLE);
-          setSystem.add(Boolean.TRUE);
-          setTemporary.add(Boolean.FALSE);
+          bSystem = true;
         }
       }
       if (setObjectTypes.size() > 0)
@@ -888,27 +877,21 @@ public class OracleDatabaseMetaData
         }
         sbCondition.append(")\r\n");
       }
-      if (setSystem.size() == 1)
+      sbCondition.append(" AND \r\n");
+      sbCondition.append(getOracleMaintainedCondition(bSystem));
+      sbCondition.append("\r\n");
+      if (!bSystem)
       {
-        sbCondition.append(" AND \r\n");
-        sbCondition.append(getOracleMaintainedCondition(setSystem.contains(Boolean.TRUE)));
-        sbCondition.append("\r\n");
-        if (setSystem.contains(Boolean.FALSE))
-        {
-          sbCondition.append("AND O.GENERATED = ");
-          sbCondition.append(SqlLiterals.formatStringLiteral("N"));
-          sbCondition.append("\r\n");
-        }
-      }
-      if (setTemporary.size() == 1)
-      {
-        String sTemporary = "N";
-        if (setTemporary.contains(Boolean.TRUE))
-          sTemporary = "Y";
-        sbCondition.append("AND O.TEMPORARY = ");
-        sbCondition.append(SqlLiterals.formatStringLiteral(sTemporary));
+        sbCondition.append("AND O.GENERATED = ");
+        sbCondition.append(SqlLiterals.formatStringLiteral("N"));
         sbCondition.append("\r\n");
       }
+      String sTemporary = "N";
+      if (bTemporary)
+        sTemporary = "Y";
+      sbCondition.append("AND O.TEMPORARY = ");
+      sbCondition.append(SqlLiterals.formatStringLiteral(sTemporary));
+      sbCondition.append("\r\n");
     }
     
     StringBuilder sbTableTypeCase = new StringBuilder("CASE\r\n");
@@ -996,7 +979,7 @@ public class OracleDatabaseMetaData
     ResultSet rsTables = null;
     Connection conn = getConnection();
     _il.event("Unwrapped prepared query: "+sbSql.toString());
-    PreparedStatement pstmt = conn.unwrap(Connection.class).prepareStatement(sbSql.toString(),ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_READ_ONLY);
+    PreparedStatement pstmt = conn.unwrap(Connection.class).prepareStatement(sbSql.toString(),ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY);
     rsTables = pstmt.executeQuery();
     rsTables = new OracleResultSet(rsTables,conn);
     _il.exit(rsTables);

@@ -23,6 +23,8 @@ public class OracleStatement
 	extends BaseStatement 
 	implements Statement 
 {
+  private Connection _conn = null;
+  
 	/*------------------------------------------------------------------*/
 	/** constructor
 	 * @param stmtWrapped statement to be wrapped
@@ -32,6 +34,7 @@ public class OracleStatement
 	  throws SQLException
 	{
 		super(stmtWrapped);
+    _conn = new OracleConnection(super.getConnection());
 	} /* constructor */
 
 	/*------------------------------------------------------------------*/
@@ -39,8 +42,7 @@ public class OracleStatement
 	@Override
 	public Connection getConnection() throws SQLException 
 	{
-		Connection conn = new OracleConnection(super.getConnection());
-		return conn;
+		return _conn;
 	} /* getConnection */
 
 	/*------------------------------------------------------------------*/
