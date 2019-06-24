@@ -388,7 +388,7 @@ public class OracleDatabaseMetaData
     Connection conn = getConnection();
     _il.event("Unwrapped prepared query: "+sSql);
     PreparedStatement pstmt = conn.unwrap(Connection.class).prepareStatement(sSql,ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY);
-    rsColumns = new OracleMetaColumns(pstmt.executeQuery(),conn,1,2,5,6,7,7,9);
+    rsColumns = new OracleMetaColumns(pstmt.executeQuery(),conn,pstmt,1,2,5,6,7,7,9);
     _il.exit(rsColumns);
     return rsColumns;
   } /* getColumns */
@@ -506,7 +506,7 @@ public class OracleDatabaseMetaData
 	  _il.event("Unwrapped query: "+sSql);
 	  rsAttributes = stmt.unwrap(Statement.class).executeQuery(sSql);
 	  _il.exit(rsAttributes);
-	  return new OracleMetaColumns(rsAttributes,getConnection(), 1,2,5,6,7,7,8);
+	  return new OracleMetaColumns(rsAttributes,getConnection(),stmt, 1,2,5,6,7,7,8);
 	} /* getAttributes */
 
   /*------------------------------------------------------------------*/
@@ -732,7 +732,7 @@ public class OracleDatabaseMetaData
     _il.event("Unwrapped query: "+sbSql.toString());
     rsProcedureColumns = stmt.unwrap(Statement.class).executeQuery(sbSql.toString());
     _il.exit(rsProcedureColumns);
-    return new OracleMetaColumns(rsProcedureColumns,getConnection(),1,2,6,7,8,9,10);
+    return new OracleMetaColumns(rsProcedureColumns,getConnection(),stmt,1,2,6,7,8,9,10);
   } /* getProcedureColumns */
 
   /*------------------------------------------------------------------*/
@@ -981,7 +981,7 @@ public class OracleDatabaseMetaData
     _il.event("Unwrapped prepared query: "+sbSql.toString());
     PreparedStatement pstmt = conn.unwrap(Connection.class).prepareStatement(sbSql.toString(),ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY);
     rsTables = pstmt.executeQuery();
-    rsTables = new OracleResultSet(rsTables,conn);
+    rsTables = new OracleResultSet(rsTables,conn,pstmt);
     _il.exit(rsTables);
     return rsTables;
   } /* getTables */

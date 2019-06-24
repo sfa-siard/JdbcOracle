@@ -37,6 +37,7 @@ public class OracleResultSet
   private static IndentLogger _il = IndentLogger.getIndentLogger(OracleResultSet.class.getName());
   private static final int iBUFSIZ = 8192;
   protected Connection _conn = null;
+  private Statement _stmt = null;
   private int _iLongColumnIndex = -1;
   private Object _oLongValue = null;
   private boolean _bLongWasNull = false;
@@ -248,11 +249,12 @@ public class OracleResultSet
    * @param rsWrapped result set to be wrapped.
    * @param conn current connection.
    */
-  public OracleResultSet(ResultSet rsWrapped, Connection conn)
+  public OracleResultSet(ResultSet rsWrapped, Connection conn, Statement stmt)
     throws SQLException
   {
     super(rsWrapped);
     _conn = conn;
+    _stmt = stmt;
     /* determine LONG column, if one exists */
     _iLongColumnIndex = -1;
     ResultSetMetaData rsmd = rsWrapped.getMetaData();
@@ -293,7 +295,7 @@ public class OracleResultSet
   @Override
   public Statement getStatement() throws SQLException
   {
-    return new OracleStatement(super.getStatement());
+    return _stmt;
   } /* getStatement */
 
   /*------------------------------------------------------------------*/

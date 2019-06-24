@@ -55,7 +55,7 @@ public class OracleStatement
 	{
 		ResultSet rs = null;
 		String sNative = getConnection().nativeSQL(sql);
-		rs = new OracleResultSet(super.executeQuery(sNative),getConnection());
+		rs = new OracleResultSet(super.executeQuery(sNative),getConnection(),this);
 		return rs;
 	} /* executeQuery */
 
@@ -150,7 +150,7 @@ public class OracleStatement
 	@Override
 	public ResultSet getResultSet() throws SQLException 
 	{
-		ResultSet rs = new OracleResultSet(super.getResultSet(),getConnection());
+		ResultSet rs = new OracleResultSet(super.getResultSet(),getConnection(),this);
 		return rs;
 	} /* getResultSet */
 
