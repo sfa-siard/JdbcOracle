@@ -301,12 +301,12 @@ public class OracleMetaColumns
   /** constructor
    * @param rsWrapped DatabaseMetaData.getColumns() result set to be wrapped.
    */
-  public OracleMetaColumns(ResultSet rsWrapped, Connection conn,
+  public OracleMetaColumns(ResultSet rsWrapped, Connection conn, Statement stmt,
     int iCatalog, int iSchema, int iDataType, int iTypeName,
     int iPrecision, int iLength, int iScale)
     throws SQLException
   {
-    super(rsWrapped, conn);
+    super(rsWrapped, conn, stmt);
     _iCatalog = iCatalog;
     _iSchema = iSchema;
     _iDataType = iDataType;

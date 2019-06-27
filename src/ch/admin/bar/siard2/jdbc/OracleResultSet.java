@@ -37,8 +37,10 @@ public class OracleResultSet
   private static IndentLogger _il = IndentLogger.getIndentLogger(OracleResultSet.class.getName());
   private static final int iBUFSIZ = 8192;
   protected Connection _conn = null;
+  private Statement _stmt = null;
   private int _iLongColumnIndex = -1;
   private Object _oLongValue = null;
+  private boolean _bLongWasNull = false;
   
   /*------------------------------------------------------------------*/
   /** convert an OracleSQLException into an SQLFeatureNotSupportedException.
@@ -247,11 +249,12 @@ public class OracleResultSet
    * @param rsWrapped result set to be wrapped.
    * @param conn current connection.
    */
-  public OracleResultSet(ResultSet rsWrapped, Connection conn)
+  public OracleResultSet(ResultSet rsWrapped, Connection conn, Statement stmt)
     throws SQLException
   {
     super(rsWrapped);
     _conn = conn;
+    _stmt = stmt;
     /* determine LONG column, if one exists */
     _iLongColumnIndex = -1;
     ResultSetMetaData rsmd = rsWrapped.getMetaData();
@@ -276,11 +279,11 @@ public class OracleResultSet
   {
     if (bPositioned && (_iLongColumnIndex > 0))
     {
-      if ((getType() == ResultSet.TYPE_FORWARD_ONLY) ||
-          (getConcurrency() == ResultSet.CONCUR_READ_ONLY))
+      ResultSet rsWrapped = unwrap(ResultSet.class);
+      if (rsWrapped.getConcurrency() == ResultSet.CONCUR_READ_ONLY)
       {
-        ResultSet rsWrapped = unwrap(ResultSet.class);
         _oLongValue = rsWrapped.getObject(_iLongColumnIndex);
+        _bLongWasNull = rsWrapped.wasNull();
       }
       else
         throw new SQLException("LONG values can only be read, if the result set concurrency is read-only!");
@@ -292,7 +295,7 @@ public class OracleResultSet
   @Override
   public Statement getStatement() throws SQLException
   {
-    return new OracleStatement(super.getStatement());
+    return _stmt;
   } /* getStatement */
 
   /*------------------------------------------------------------------*/
@@ -300,7 +303,9 @@ public class OracleResultSet
   @Override
   public ResultSetMetaData getMetaData() throws SQLException
   {
-    return new OracleResultSetMetaData(super.getMetaData(),getStatement().getConnection());
+    ResultSetMetaData rsmd = super.getMetaData();
+    rsmd = new OracleResultSetMetaData(rsmd,_conn);
+    return rsmd;
   } /* getMetaData */
 
   /*------------------------------------------------------------------*/
@@ -347,7 +352,10 @@ public class OracleResultSet
     if (columnIndex != _iLongColumnIndex)
       s = super.getString(columnIndex);
     else
+    {
       s = (String)_oLongValue;
+      _bWasNull = _bLongWasNull;
+    }
     return s;
   } /* getString */
 
@@ -384,7 +392,10 @@ public class OracleResultSet
     if (columnIndex != _iLongColumnIndex)
       o = super.getObject(columnIndex);
     else
+    {
       o = _oLongValue;
+      _bWasNull = _bLongWasNull;
+    }
     return mapObject(o,iType);
   } /* getObject */
 
@@ -400,7 +411,10 @@ public class OracleResultSet
     if (columnIndex != _iLongColumnIndex)
       o = super.getObject(columnIndex);
     else
+    {
       o = _oLongValue;
+      _bWasNull = _bLongWasNull;
+    }
     oMapped = mapObject(o, iType, type);
     return oMapped;
   } /* getObject */
@@ -417,7 +431,10 @@ public class OracleResultSet
       if (columnIndex != _iLongColumnIndex)
         o = super.getObject(columnIndex, map);
       else
+      {
         o = _oLongValue;
+        _bWasNull = _bLongWasNull;
+      }
     }
     catch(SQLException se) { throw new SQLFeatureNotSupportedException("getObject(,map) not supported!",se); }
     return o;

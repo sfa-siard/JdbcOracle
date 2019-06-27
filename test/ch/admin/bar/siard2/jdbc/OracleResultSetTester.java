@@ -1125,8 +1125,8 @@ public class OracleResultSetTester
     enter();
     try
     {
-      /* must be updatable for reading LONG value */
-      openResultSet(_sNativeQuerySimple,ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_UPDATABLE);
+      /* must not be updatable for reading LONG value */
+      openResultSet(_sNativeQuerySimple,ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY);
       for (int iColumn = 0; iColumn < TestOracleDatabase._listCdSimple.size(); iColumn++)
       {
         TestColumnDefinition tcd = TestOracleDatabase._listCdSimple

@@ -42,7 +42,7 @@ public class OracleLongTester
     Connection conn = _dmdOracle.getConnection();
     PreparedStatement pstmt = _dmdOracle.getConnection().unwrap(Connection.class).prepareStatement(sSql);
     ResultSet rs = pstmt.executeQuery();
-    rs = new OracleResultSet(rs,conn);
+    rs = new OracleResultSet(rs,conn,pstmt);
     while (rs.next())
     {
       String s = rs.getString(sColumnLabel);
