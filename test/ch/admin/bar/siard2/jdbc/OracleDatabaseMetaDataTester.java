@@ -252,7 +252,7 @@ public class OracleDatabaseMetaDataTester
 				{
 					String sCatalogName = rs.getString("TABLE_CATALOG");
 					String sSchemaName = rs.getString("TABLE_SCHEM");
-					
+					System.out.println(sSchemaName);
 					if(sCatalogName != null) {
 						fail("Found unexpected schema name");
 					}
@@ -269,6 +269,7 @@ public class OracleDatabaseMetaDataTester
 		} catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
 	}
 	
+	@Test
 	public void testSchemas()
 	{
 	  enter();
@@ -284,6 +285,8 @@ public class OracleDatabaseMetaDataTester
         }
         if (!"SYS".equals(sSchemaName))
           fail("Found "+sSchemaName+" instead of SYS");
+        else
+          System.out.println("Schema SYS found!");
 	    }
 	    if (rs.next())
 	      fail("More than one schema found!");
