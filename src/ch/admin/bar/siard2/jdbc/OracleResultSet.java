@@ -390,7 +390,14 @@ public class OracleResultSet
     int iType = getMetaData().unwrap(ResultSetMetaData.class).getColumnType(columnIndex);
     Object o = null;
     if (columnIndex != _iLongColumnIndex)
+    {
       o = super.getObject(columnIndex);
+      if (o instanceof oracle.sql.ANYDATA)
+      {
+        oracle.sql.ANYDATA a = (oracle.sql.ANYDATA)o;
+        o = a.stringValue();
+      }
+    }
     else
     {
       o = _oLongValue;

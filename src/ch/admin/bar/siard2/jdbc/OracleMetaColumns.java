@@ -169,6 +169,8 @@ public class OracleMetaColumns
       PredefinedType preType = getPredefinedType(qiTypeName.getName(),(int)lColumnSize,iDecimals);
       if (preType.getType() != null)
         iType = preType.getType().getSqlType();
+      else if (qiTypeName.getSchema().equals("SYS") && qiTypeName.getName().equals("ANYDATA"))
+        iType = Types.CLOB;
       else
         iType = Types.STRUCT;
     }
