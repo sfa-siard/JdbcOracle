@@ -395,7 +395,7 @@ public class OracleResultSet
       if (o instanceof oracle.sql.ANYDATA)
       {
         oracle.sql.ANYDATA a = (oracle.sql.ANYDATA)o;
-        o = a.stringValue();
+        o = new OracleClob(a.stringValue());
       }
     }
     else
@@ -472,6 +472,8 @@ public class OracleResultSet
     String sTypeName = getMetaData().getColumnTypeName(columnIndex);
     if ("LONG".equals(sTypeName))
       clob = new OracleLongClob((String)getObject(columnIndex));
+    else if ("SYS.ANYDATA".equals(sTypeName))
+      clob = (Clob)getObject(columnIndex);
     else
       clob = super.getClob(columnIndex); 
     return clob;

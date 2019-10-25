@@ -40,12 +40,38 @@ public class AnyDataTester
       DatabaseMetaData dmd = _conn.getMetaData();
       ResultSet rs = dmd.getColumns(null, _sDB_USER, "IFS_IN_TABLE", "%");
       BaseDatabaseMetaDataTester.print(rs);
+    }
+    catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
+  }
+
+  @Test
+  public void testGetObject() 
+  {
+    try
+    {
       Statement stmt = _conn.createStatement();
-      rs = stmt.executeQuery("SELECT USER_PROP FROM IFS_IN_TABLE");
+      ResultSet rs = stmt.executeQuery("SELECT USER_PROP FROM IFS_IN_TABLE");
       while (rs.next())
       {
         Object o = rs.getObject(1);
         System.out.println(String.valueOf(o));
+      }
+      rs.close();
+    }
+    catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
+  }
+
+  @Test
+  public void testGetClob() 
+  {
+    try
+    {
+      Statement stmt = _conn.createStatement();
+      ResultSet rs = stmt.executeQuery("SELECT USER_PROP FROM IFS_IN_TABLE");
+      while (rs.next())
+      {
+        Clob clob = rs.getClob(1);
+        System.out.println(clob.getSubString(1, (int)clob.length()));
       }
       rs.close();
     }

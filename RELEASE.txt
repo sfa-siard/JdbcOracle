@@ -1,11 +1,14 @@
 Release Notes for JdbcOracle 2.1
 ================================
 
+2.1.47
+Added conversion from ANYDATA to Clob.
+
 2.1.41
-Corrected handling of QUERY_TEXT in getTables
+Corrected handling of QUERY_TEXT in getTables.
 
 2.1.0
-Release for JAVA 10
+Release for JAVA 10.
 
 2.0.38
 .gitattributes added.
