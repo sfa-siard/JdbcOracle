@@ -126,7 +126,7 @@ public class TestOracleDatabase
     _iCandidateSimple = listCdSimple.size(); // next column will be unique key column 
     listCdSimple.add(new ColumnDefinition("CSMALLINT","SMALLINT",Short.valueOf((short)12345)));
     _iPrimarySimple = listCdSimple.size(); // next column will be primary key column 
-    listCdSimple.add(new ColumnDefinition("CINTEGER","INTEGER",Integer.valueOf(1234567890)));
+    listCdSimple.add(new ColumnDefinition("CINTEGER","INT",Integer.valueOf(1234567890)));
     listCdSimple.add(new ColumnDefinition("CNUMBER_15_5","NUMBER(15,5)",BigDecimal.valueOf(12345678901l, 5)));
     /* approximate */
     listCdSimple.add(new ColumnDefinition("CFLOAT","FLOAT(15)",Double.valueOf(2.7183)));
@@ -148,10 +148,10 @@ public class TestOracleDatabase
   private static List<TestColumnDefinition> getListCdArray()
   {
     List<TestColumnDefinition> listCd = new ArrayList<TestColumnDefinition>();
-    listCd.add(new ColumnDefinition("CARRAY_4[1]","CHARACTER(3)","CHF"));
-    listCd.add(new ColumnDefinition("CARRAY_4[2]","CHARACTER(3)",null));
-    listCd.add(new ColumnDefinition("CARRAY_4[3]","CHARACTER(3)","EUR"));
-    listCd.add(new ColumnDefinition("CARRAY_4[4]","CHARACTER(3)",null));
+    listCd.add(new ColumnDefinition("CARRAY_4[1]","CHAR(3)","CHF"));
+    listCd.add(new ColumnDefinition("CARRAY_4[2]","CHAR(3)",null));
+    listCd.add(new ColumnDefinition("CARRAY_4[3]","CHAR(3)","EUR"));
+    listCd.add(new ColumnDefinition("CARRAY_4[4]","CHAR(3)",null));
     return listCd;
   }
   public static List<TestColumnDefinition> _listCdArray = getListCdArray();
@@ -180,7 +180,7 @@ public class TestOracleDatabase
   {
     List<TestColumnDefinition> listCdComplex = new ArrayList<TestColumnDefinition>();
     _iPrimaryComplex = listCdComplex.size(); // next column will be primary key column 
-    listCdComplex.add(new ColumnDefinition("CID","INTEGER",Integer.valueOf(987654321)));
+    listCdComplex.add(new ColumnDefinition("CID","INT",Integer.valueOf(987654321)));
     listCdComplex.add(new ColumnDefinition("CUDT_VARRAY",getQualifiedArrayType().format(),_listCdArray));
     listCdComplex.add(new ColumnDefinition("CUDT_OBJECT",getQualifiedObjectType().format(),_listAdObject));
     listCdComplex.add(new ColumnDefinition("CUDT_COMPLEX",getQualifiedComplexType().format(),_listAdComplex));
