@@ -204,9 +204,11 @@ public class OracleDatabaseMetaDataTester
             }
           }
         }
+        rs.close();
       }
       else 
         fail("Invalid column meta data result set!");
+      print(getDatabaseMetaData().getColumns(null, _dmdOracle.toPattern(qiTable.getSchema()), _dmdOracle.toPattern(qiTable.getName()), "%"));
     }
     catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
     catch(ParseException pe) { fail(EU.getExceptionMessage(pe)); }
