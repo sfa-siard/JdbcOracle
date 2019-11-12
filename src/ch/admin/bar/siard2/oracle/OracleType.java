@@ -34,7 +34,8 @@ public enum OracleType
   NVARCHAR2("NVARCHAR2", -9),
   NCLOB("NCLOB", 2011),
   XMLTYPE("XMLTYPE", 2009),
-  BFILE("BFILE",13);
+  BFILE("BFILE",13),
+  ANYDATA("ANYDATA",2005);
   
   private String _sName = null;
   public String getName() { return _sName; }

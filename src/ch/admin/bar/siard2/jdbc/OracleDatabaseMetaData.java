@@ -191,6 +191,7 @@ public class OracleDatabaseMetaData
     throws SQLException
   {
     Map<String,Integer> mapDataType = new HashMap<String,Integer>();
+    mapDataType.put("ANYDATA",Integer.valueOf(Types.CLOB));
     mapDataType.put("BFILE",Integer.valueOf(Types.BLOB));
     mapDataType.put("BIGINT",Integer.valueOf(Types.BIGINT));
     mapDataType.put("BINARY_DOUBLE",Integer.valueOf(Types.DOUBLE));
@@ -228,7 +229,7 @@ public class OracleDatabaseMetaData
       String sTypeName = iterTypeName.next();
       int iDataType = mapDataType.get(sTypeName).intValue();
       sbDataTypeCase.append("    WHEN ");
-      if ((iDataType != Types.ARRAY) && (iDataType != Types.STRUCT))
+      if ((iDataType != Types.ARRAY) && (iDataType != Types.STRUCT) && (!sTypeName.equals("ANYDATA")))
         sbDataTypeCase.append(sDataType);
       else
         sbDataTypeCase.append(sTypeCode);
