@@ -52,6 +52,17 @@ public class OracleStatementTester extends BaseStatementTester
   private static final String _sSQL_CLEAN = "DROP TABLE TESTTABLE RESTRICT";
   private static final String _sSQL_QUERY = "SELECT * FROM SYS.USER_TABLES";
 
+  protected void clean()
+      throws SQLException
+    {
+      try 
+      { 
+        getStatement().executeUpdate(_sSQL_CLEAN);
+        getStatement().getConnection().commit();
+      }
+      catch(SQLException se) { getStatement().getConnection().rollback(); }
+    } /* clean */
+    
   @BeforeClass
   public static void setUpClass()
   {
@@ -110,11 +121,18 @@ public class OracleStatementTester extends BaseStatementTester
   public void testExecute()
   {
     enter();
-    try { _stmtOracle.execute(_sSQL_CLEAN); }
-    catch(SQLException se) { System.out.println(EU.getExceptionMessage(se)); }
-    try { _stmtOracle.execute(_sSQL_DDL); }
+    try 
+    {
+      clean();
+      _stmtOracle.execute(_sSQL_DDL); 
+    }
     catch(SQLTimeoutException ste) { fail(EU.getExceptionMessage(ste)); }
     catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
+    finally
+    {
+      try { _stmtOracle.execute(_sSQL_CLEAN); }
+      catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
+    }
   } /* testExecute */
   
   @Test
@@ -122,12 +140,19 @@ public class OracleStatementTester extends BaseStatementTester
   public void testExecute_String_int()
   {
     enter();
-    try { _stmtOracle.execute(_sSQL_CLEAN); }
-    catch(SQLException se) { System.out.println(EU.getExceptionMessage(se)); }
-    try { _stmtOracle.execute(_sSQL_DDL, Statement.NO_GENERATED_KEYS); }
+    try 
+    { 
+      clean();
+      _stmtOracle.execute(_sSQL_DDL, Statement.NO_GENERATED_KEYS); 
+    }
     catch(SQLFeatureNotSupportedException sfnse) { System.out.println(EU.getExceptionMessage(sfnse)); }
     catch(SQLTimeoutException ste) { fail(EU.getExceptionMessage(ste)); }
     catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
+    finally
+    {
+      try { _stmtOracle.execute(_sSQL_CLEAN); }
+      catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
+    }
   } /* testExecute_String_int */
   
   @Test
@@ -135,12 +160,19 @@ public class OracleStatementTester extends BaseStatementTester
   public void testExecute_String_AInt()
   {
     enter();
-    try { _stmtOracle.execute(_sSQL_CLEAN); }
-    catch(SQLException se) { System.out.println(EU.getExceptionMessage(se)); }
-    try { _stmtOracle.execute(_sSQL_DDL, new int[] {1,2}); }
+    try 
+    {
+      clean();
+      _stmtOracle.execute(_sSQL_DDL, new int[] {1,2});
+    }
     catch(SQLFeatureNotSupportedException sfnse) { System.out.println(EU.getExceptionMessage(sfnse)); }
     catch(SQLTimeoutException ste) { fail(EU.getExceptionMessage(ste)); }
     catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
+    finally
+    {
+      try { _stmtOracle.execute(_sSQL_CLEAN); }
+      catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
+    }
   } /* testExecute_String_AInt */
   
   @Test
@@ -148,12 +180,19 @@ public class OracleStatementTester extends BaseStatementTester
   public void testExecute_String_AString()
   {
     enter();
-    try { _stmtOracle.execute(_sSQL_CLEAN); }
-    catch(SQLException se) { System.out.println(EU.getExceptionMessage(se)); }
-    try { _stmtOracle.execute(_sSQL_DDL, new String[]{"COL_A", "COL_B"}); }
+    try 
+    {
+      clean();
+      _stmtOracle.execute(_sSQL_DDL, new String[]{"COL_A", "COL_B"});
+    }
     catch(SQLFeatureNotSupportedException sfnse) { System.out.println(EU.getExceptionMessage(sfnse)); }
     catch(SQLTimeoutException ste) { fail(EU.getExceptionMessage(ste)); }
     catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
+    finally
+    {
+      try { _stmtOracle.execute(_sSQL_CLEAN); }
+      catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
+    }
   } /* testExecute_String_AString */
   
   @Test
@@ -161,11 +200,18 @@ public class OracleStatementTester extends BaseStatementTester
   public void testExecuteUpdate()
   {
     enter();
-    try { _stmtOracle.executeUpdate(_sSQL_CLEAN); }
-    catch(SQLException se) { System.out.println(EU.getExceptionMessage(se)); }
-    try { _stmtOracle.executeUpdate(_sSQL_DDL); }
+    try 
+    {
+      clean();
+      _stmtOracle.executeUpdate(_sSQL_DDL); 
+    }
     catch(SQLTimeoutException ste) { fail(EU.getExceptionMessage(ste)); }
     catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
+    finally
+    {
+      try { _stmtOracle.execute(_sSQL_CLEAN); }
+      catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
+    }
   } /* testExecuteUpdate */
   
   @Test
