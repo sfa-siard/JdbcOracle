@@ -4,10 +4,10 @@ Specification-Title: JDBC
 Specification-Version: 4
 Specification-Vendor: Enter AG, Rüti ZH, Switzerland
 Implementation-Title: Oracle JDBC Wrapper
-Implementation-Version: 2.1.55
+Implementation-Version: 2.1.58
 Implementation-Vendor: Enter AG, Rüti ZH, Switzerland
 Main-Class: ch.admin.bar.siard2.jdbc.OracleDriver
-Built-Date: 12. Nov 2019
+Built-Date: 29. Nov 2019
 Class-Path: ojdbc6.jar
   jdbcbase.jar
   sqlparser.jar
