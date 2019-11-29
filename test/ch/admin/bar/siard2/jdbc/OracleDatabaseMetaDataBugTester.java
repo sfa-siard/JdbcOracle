@@ -11,7 +11,7 @@ import ch.admin.bar.siard2.jdbcx.*;
 
 public class OracleDatabaseMetaDataBugTester 
 {
-
+  private static final DU _du = DU.getInstance("en", "yyyy-MM-dd HH:mm:ss.S");
 	private static final ConnectionProperties _cp = new ConnectionProperties();	  
 	private static final String _sDB_URL = OracleDriver.getUrl(_cp.getHost()+":"+_cp.getPort()+":"+_cp.getInstance());
   private static final String _sDB_USER = "BUGUSER";
@@ -162,7 +162,6 @@ public class OracleDatabaseMetaDataBugTester
     catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
   }
   
-  @SuppressWarnings("deprecation")
   @Test
   public void testGetData()
   {
@@ -179,8 +178,8 @@ public class OracleDatabaseMetaDataBugTester
         Timestamp tsNormal = rs.getTimestamp("DATENORMAL");
         Timestamp tsHigh = rs.getTimestamp("DATEHIGH");
         Timestamp tsTime = rs.getTimestamp("TIMEFULL");
-        System.out.println("TZ minutes: "+tsNormal.getTimezoneOffset());
-        System.out.println(String.valueOf(iId)+"\t"+tsLow.toGMTString()+"\t"+tsNormal.toGMTString()+"\t"+tsHigh.toGMTString()+"\t"+tsTime.toGMTString());
+        System.out.println(String.valueOf(iId)+"\t"+_du.fromSqlTimestamp(tsLow)+"\t"+_du.fromSqlTimestamp(tsNormal)+"\t"+_du.fromSqlTimestamp(tsHigh)+"\t"+_du.fromSqlTimestamp(tsTime));
+        System.out.println(String.valueOf(iId)+"\t"+_du.toXsDateTime(tsLow)+"\t"+_du.toXsDateTime(tsNormal)+"\t"+_du.toXsDateTime(tsHigh)+"\t"+_du.toXsDateTime(tsTime));
       }
       rs.close();
       stmt.close();
