@@ -47,7 +47,7 @@ public class OracleMetaColumns
   {
     mapNAME_ORACLE_TO_ISO.put("INTERVALDS", PreType.INTERVAL);
     mapNAME_ORACLE_TO_ISO.put("INTERVALYM", PreType.INTERVAL);
-    mapNAME_ORACLE_TO_ISO.put("DATE", PreType.DATE);
+    mapNAME_ORACLE_TO_ISO.put("DATE", PreType.TIMESTAMP);
     mapNAME_ORACLE_TO_ISO.put("TIME", PreType.TIME);
     mapNAME_ORACLE_TO_ISO.put("TIMESTAMP", PreType.TIMESTAMP);
     mapNAME_ORACLE_TO_ISO.put("TIMESTAMP WITH LOCAL TIME ZONE", PreType.TIMESTAMP);
@@ -153,7 +153,29 @@ public class OracleMetaColumns
       catch(Exception e) { }
     }
     if (pt != null)
+    {
+      if (sTypeName.equalsIgnoreCase("NUMBER") || sTypeName.equalsIgnoreCase("NUMERIC"))
+      {
+        if (iColumnSize >= 0)
+        {
+          if (iColumnSize <= 5)
+            pt = PreType.SMALLINT;
+          else if (iColumnSize <= 10)
+            pt = PreType.INTEGER;
+          else if (iDecimals <= 0)
+            pt = PreType.BIGINT;
+        }
+      }
+      else if (sTypeName.equalsIgnoreCase("DATE"))
+      {
+        if (iColumnSize >= 0)
+        {
+          if (iColumnSize < 7)
+            pt = PreType.TIME;
+        }
+      }
       preType.initialize(pt.getSqlType(), iColumnSize, iDecimals);
+    }
     return preType;
   } /* getPredefinedType */
   
