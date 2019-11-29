@@ -344,13 +344,19 @@ public class OracleStatementTester extends BaseStatementTester
       try 
       { 
         stmtOracle.executeUpdate("DELETE FROM AKTIONSKNOPF"); 
-        stmtOracle.executeUpdate("DROP TABLE AKTIONSKNOPF"); 
+        stmtOracle.executeUpdate("DROP TABLE AKTIONSKNOPF CASCADE CONSTRAINTS"); 
       }
       catch(SQLException se) { System.out.println(EU.getExceptionMessage(se));}
       int iResult = stmtOracle.executeUpdate(sSqlCreate);
       assertEquals("Table creation failed!",0,iResult);
       iResult = stmtOracle.executeUpdate(sSqlInsert);
       assertEquals("Insert into table failed!",1,iResult);
+      try 
+      { 
+        stmtOracle.executeUpdate("DELETE FROM AKTIONSKNOPF"); 
+        stmtOracle.executeUpdate("DROP TABLE AKTIONSKNOPF CASCADE CONSTRAINTS"); 
+      }
+      catch(SQLException se) { System.out.println(EU.getExceptionMessage(se));}
       connOracle.commit();
     }
     catch (SQLException se) { fail(EU.getExceptionMessage(se)); }

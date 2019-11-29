@@ -1,6 +1,9 @@
 Release Notes for JdbcOracle 2.1
 ================================
 
+2.1.57
+Corrected handling of DATE data type.
+
 2.1.47
 Added conversion from ANYDATA to Clob.
 
