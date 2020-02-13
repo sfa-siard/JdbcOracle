@@ -121,42 +121,62 @@ public class OracleDatabaseMetaDataTester
           QualifiedId qiType = new QualifiedId(sTypeName);
           sTypeName = qiType.getName();
           int iColumnSize = rs.getInt("COLUMN_SIZE");
+          int iDecimals = rs.getInt("DECIMAL_DIGITS");
+          if (rs.wasNull())
+            iDecimals = -1;
+          System.out.println(sColumnName+": "+sTypeName+"("+String.valueOf(iColumnSize)+","+String.valueOf(iDecimals)+")");
           switch(sTypeName)
           {
-            case "CHAR": assertEquals("Invalid CHAR mapping!",iDataType,Types.CHAR); break;
-            case "VARCHAR2": assertEquals("Invalid VARCHAR mapping!",iDataType,Types.VARCHAR); break;
-            case "LONG": assertEquals("Invalid LONG mapping!",iDataType,Types.CLOB); break;
-            case "CLOB": assertEquals("Invalid CLOB mapping!",iDataType,Types.CLOB); break;
-            case "NCHAR": assertEquals("Invalid NCHAR mapping!",iDataType,Types.NCHAR); break;
-            case "NCHAR VARYING": assertEquals("Invalid NCHAR VARYING mapping!",iDataType,Types.NVARCHAR); break;
-            case "NVARCHAR2": assertEquals("Invalid NVARCHAR2 mapping!",iDataType,Types.NVARCHAR); break;
-            case "NCLOB": assertEquals("Invalid NCLOB mapping!",iDataType,Types.NCLOB); break;
-            case "XML": assertEquals("Invalid XML mapping!",iDataType,Types.SQLXML); break;
-            case "XMLTYPE": assertEquals("Invalid XMLTYPE mapping!",iDataType,Types.SQLXML); break;
-            case "RAW": assertEquals("Invalid RAW mapping!",iDataType,Types.VARBINARY); break;
-            case "BLOB": assertEquals("Invalid BLOB mapping!",iDataType,Types.BLOB); break;
-            case "BFILE": assertEquals("Invalid BFILE mapping!",iDataType,Types.BLOB); break;
-            case "NUMBER": assertEquals("Invalid NUMBER mapping!",iDataType,Types.DECIMAL); break;
-            case "TINYINT": assertEquals("Invalid TINYINT mapping!",iDataType,Types.SMALLINT); break;
-            case "SMALLINT": assertEquals("Invalid SMALLINT mapping!",iDataType,Types.SMALLINT); break;
-            case "INTEGER": assertEquals("Invalid INTEGER mapping!",iDataType,Types.INTEGER); break;
-            case "BIGINT": assertEquals("Invalid BIGINT mapping!",iDataType,Types.BIGINT); break;
-            case "DECIMAL": assertEquals("Invalid DECIMAL mapping!",iDataType,Types.DECIMAL); break;
-            case "NUMERIC": assertEquals("Invalid NUMERIC mapping!",iDataType,Types.NUMERIC); break;
-            case "REAL": assertEquals("Invalid REAL mapping!",iDataType,Types.REAL); break;
-            case "DOUBLE": assertEquals("Invalid DOUBLE mapping!",iDataType,Types.DOUBLE); break;
-            case "FLOAT": assertEquals("Invalid FLOAT mapping!",iDataType,Types.FLOAT); break;
-            case "BINARY_FLOAT": assertEquals("Invalid BINARY_FLOAT mapping!",iDataType,Types.REAL); break;
-            case "BINARY_DOUBLE": assertEquals("Invalid BINARY_DOUBLE mapping!",iDataType,Types.DOUBLE); break;
-            case "BOOLEAN": assertEquals("Invalid BOOLEAN mapping!",iDataType,Types.BOOLEAN); break;
-            case "DATE": assertEquals("Invalid DATE mapping!",iDataType,Types.DATE); break;
-            case "TIMESTAMP": assertEquals("Invalid TIMESTAMP mapping!",iDataType,Types.TIMESTAMP); break;
-            case "TIMESTAMP WITH TIME ZONE": assertEquals("Invalid TIMESTAMP WITH TIME ZONE mapping!",iDataType,Types.TIMESTAMP); break;
-            case "TIMESTAMP WITH LOCAL TIME ZONE": assertEquals("Invalid TIMESTAMP WITH LOCAL TIME ZONE mapping!",iDataType,Types.TIMESTAMP); break;
-            case "INTERVALDS": assertEquals("Invalid INTERVALDS mapping!",iDataType,Types.OTHER); break;
-            case "INTERVALYM": assertEquals("Invalid smalldatetime mapping!",iDataType,Types.OTHER); break;
+            case "CHAR": assertEquals("Invalid CHAR mapping!",Types.CHAR,iDataType); break;
+            case "VARCHAR2": assertEquals("Invalid VARCHAR mapping!",Types.VARCHAR,iDataType); break;
+            case "LONG": assertEquals("Invalid LONG mapping!",Types.CLOB,iDataType); break;
+            case "CLOB": assertEquals("Invalid CLOB mapping!",Types.CLOB,iDataType); break;
+            case "NCHAR": assertEquals("Invalid NCHAR mapping!",Types.NCHAR,iDataType); break;
+            case "NCHAR VARYING": assertEquals("Invalid NCHAR VARYING mapping!",Types.NVARCHAR,iDataType); break;
+            case "NVARCHAR2": assertEquals("Invalid NVARCHAR2 mapping!",Types.NVARCHAR,iDataType); break;
+            case "NCLOB": assertEquals("Invalid NCLOB mapping!",Types.NCLOB,iDataType); break;
+            case "XML": assertEquals("Invalid XML mapping!",Types.SQLXML,iDataType); break;
+            case "XMLTYPE": assertEquals("Invalid XMLTYPE mapping!",Types.SQLXML,iDataType); break;
+            case "RAW": assertEquals("Invalid RAW mapping!",Types.VARBINARY,iDataType); break;
+            case "BLOB": assertEquals("Invalid BLOB mapping!",Types.BLOB,iDataType); break;
+            case "BFILE": assertEquals("Invalid BFILE mapping!",Types.BLOB,iDataType); break;
+            // case "NUMBER": assertEquals("Invalid NUMBER mapping!",Types.DECIMAL,iDataType); break;
+            case "TINYINT": assertEquals("Invalid TINYINT mapping!",Types.SMALLINT,iDataType); break;
+            case "SMALLINT": assertEquals("Invalid SMALLINT mapping!",Types.SMALLINT,iDataType); break;
+            case "INTEGER": assertEquals("Invalid INTEGER mapping!",Types.INTEGER,iDataType); break;
+            case "BIGINT": assertEquals("Invalid BIGINT mapping!",Types.BIGINT,iDataType); break;
+            case "DECIMAL": assertEquals("Invalid DECIMAL mapping!",Types.DECIMAL,iDataType); break;
+            case "NUMERIC": assertEquals("Invalid NUMERIC mapping!",Types.NUMERIC,iDataType); break;
+            case "REAL": assertEquals("Invalid REAL mapping!",Types.REAL,iDataType); break;
+            case "DOUBLE": assertEquals("Invalid DOUBLE mapping!",Types.DOUBLE,iDataType); break;
+            case "FLOAT": assertEquals("Invalid FLOAT mapping!",Types.FLOAT,iDataType); break;
+            case "BINARY_FLOAT": assertEquals("Invalid BINARY_FLOAT mapping!",Types.REAL,iDataType); break;
+            case "BINARY_DOUBLE": assertEquals("Invalid BINARY_DOUBLE mapping!",Types.DOUBLE,iDataType); break;
+            case "BOOLEAN": assertEquals("Invalid BOOLEAN mapping!",Types.BOOLEAN,iDataType); break;
+            case "DATE": assertEquals("Invalid DATE mapping!",Types.TIMESTAMP,iDataType); break;
+            case "TIMESTAMP": assertEquals("Invalid TIMESTAMP mapping!",Types.TIMESTAMP,iDataType); break;
+            case "TIMESTAMP WITH TIME ZONE": assertEquals("Invalid TIMESTAMP WITH TIME ZONE mapping!",Types.TIMESTAMP,iDataType); break;
+            case "TIMESTAMP WITH LOCAL TIME ZONE": assertEquals("Invalid TIMESTAMP WITH LOCAL TIME ZONE mapping!",Types.TIMESTAMP,iDataType); break;
+            case "INTERVALDS": assertEquals("Invalid INTERVALDS mapping!",Types.OTHER,iDataType); break;
+            case "INTERVALYM": assertEquals("Invalid smalldatetime mapping!",Types.OTHER,iDataType); break;
             default:
-              if ((sTypeName.startsWith("TIMESTAMP(") &&
+              if (sTypeName.equals("NUMBER"))
+              {
+                if (iDecimals == 0)
+                {
+                  if (iColumnSize <= 5)
+                    assertEquals("Invalid NUMERIC mapping!",Types.SMALLINT,iDataType);
+                  else if (iColumnSize <= 10)
+                    assertEquals("Invalid NUMERIC mapping!",Types.INTEGER,iDataType);
+                  else
+                    assertEquals("Invalid NUMERIC mapping!",Types.BIGINT,iDataType);
+                }
+                else if (iDecimals < 0)
+                  assertEquals("Invalid NUMERIC mapping!",Types.FLOAT,iDataType);
+                else
+                  assertEquals("Invalid NUMERIC mapping!",Types.DECIMAL,iDataType);
+              }
+              else if ((sTypeName.startsWith("TIMESTAMP(") &&
                    sTypeName.endsWith(")")) ||
                   (sTypeName.startsWith("TIMESTAMP(") &&
                    sTypeName.endsWith(") WITH TIME ZONE")) ||

@@ -1,5 +1,6 @@
 package ch.admin.bar.siard2.jdbc;
 
+import java.math.*;
 import java.sql.*;
 import java.util.*;
 import static org.junit.Assert.*;
@@ -11,12 +12,11 @@ import ch.admin.bar.siard2.jdbcx.*;
 
 public class OracleDatabaseMetaDataBugTester 
 {
-  private static final DU _du = DU.getInstance("en", "yyyy-MM-dd HH:mm:ss.S");
 	private static final ConnectionProperties _cp = new ConnectionProperties();	  
 	private static final String _sDB_URL = OracleDriver.getUrl(_cp.getHost()+":"+_cp.getPort()+":"+_cp.getInstance());
   private static final String _sDB_USER = "BUGUSER";
   private static final String _sDB_PASSWORD = "bugpwd";
-  private static final String _sTABLE_BUG = "DATETEST";
+  private static final String _sTABLE_BUG = "BUGSIMONE";
 	
   /*------------------------------------------------------------------*/
  	private OracleConnection _connOracle = null;
@@ -57,13 +57,13 @@ public class OracleDatabaseMetaDataBugTester
  	  throws SQLException
  	{
  	  String sSql = "CREATE TABLE "+_sTABLE_BUG+
-        "(ID INTEGER, DATELOW DATE, DATENORMAL DATE, DATEHIGH DATE, TIMEFULL DATE)";
+        "(ID INTEGER, VAL NUMBER, VAL1 NUMBER(5), VAL2 NUMBER(*,0), VAL3 NUMBER(10,5))";
  	  int iResult = executeCreate(connNative,sSql);
     if (iResult != 0)
       throw new SQLException(sSql + " failed!");
     sSql = "INSERT INTO "+_sTABLE_BUG+
-        "(ID, DATELOW, DATENORMAL, DATEHIGH, TIMEFULL) VALUES "+
-        "(1, DATE '0001-01-01', DATE '2019-11-29', DATE '9999-12-31', TIMESTAMP '2019-11-29 13:37:23')";
+        "(ID, VAL, VAL1, VAL2, VAL3) VALUES "+
+        "(1, 3.14159, 3.14159, 3.14159, 3.14159)";
  	  iResult = executeCreate(connNative,sSql);
     if (iResult != 1)
       throw new SQLException(sSql + " failed!");
@@ -168,18 +168,23 @@ public class OracleDatabaseMetaDataBugTester
     System.out.println("testGetData");
     try
     {
-      String sSql = "SELECT ID, DATELOW, DATENORMAL, DATEHIGH, TIMEFULL FROM "+_sTABLE_BUG;
+      String sSql = "SELECT ID, VAL, VAL1, VAL2, VAL3 FROM "+_sTABLE_BUG;
       Statement stmt = _connOracle.createStatement();
       ResultSet rs = stmt.executeQuery(sSql);
       while(rs.next())
       {
         int iId = rs.getInt("ID");
-        Timestamp tsLow = rs.getTimestamp("DATELOW");
-        Timestamp tsNormal = rs.getTimestamp("DATENORMAL");
-        Timestamp tsHigh = rs.getTimestamp("DATEHIGH");
-        Timestamp tsTime = rs.getTimestamp("TIMEFULL");
-        System.out.println(String.valueOf(iId)+"\t"+_du.fromSqlTimestamp(tsLow)+"\t"+_du.fromSqlTimestamp(tsNormal)+"\t"+_du.fromSqlTimestamp(tsHigh)+"\t"+_du.fromSqlTimestamp(tsTime));
-        System.out.println(String.valueOf(iId)+"\t"+_du.toXsDateTime(tsLow)+"\t"+_du.toXsDateTime(tsNormal)+"\t"+_du.toXsDateTime(tsHigh)+"\t"+_du.toXsDateTime(tsTime));
+        double d = rs.getDouble("VAL");
+        int i1 = rs.getInt("VAL1");
+        BigInteger bi2 = rs.getBigDecimal("VAL2").toBigInteger();
+        BigDecimal bd3 = rs.getBigDecimal("VAL3");
+        System.out.println(String.valueOf(iId)+": "+String.valueOf(d)+", "+String.valueOf(i1)+", "+String.valueOf(bi2)+", "+String.valueOf(bd3));
+        Object o = rs.getObject("VAL");
+        Object o1 = rs.getObject("VAL1");
+        Object o2 = rs.getObject("VAL2");
+        Object o3 = rs.getObject("VAL3");
+        System.out.println(String.valueOf(iId)+": "+String.valueOf(o)+", "+String.valueOf(o1)+", "+String.valueOf(o2)+", "+String.valueOf(o3));
+        System.out.println(String.valueOf(iId)+": "+o.getClass().getName()+", "+o1.getClass().getName()+", "+o2.getClass().getName()+", "+o3.getClass().getName());
       }
       rs.close();
       stmt.close();
