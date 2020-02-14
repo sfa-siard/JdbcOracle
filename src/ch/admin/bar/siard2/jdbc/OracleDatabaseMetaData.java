@@ -277,14 +277,19 @@ public class OracleDatabaseMetaData
   } /* getTypeNameCase */
 
   /*------------------------------------------------------------------*/
-  private String getSizeCase(String sLength, String sPrecision)
+  private String getSizeCase(String sDataType, String sLength, String sPrecision)
   {
     StringBuilder sbColumnSizeCase = new StringBuilder("  CASE \r\n");
     sbColumnSizeCase.append("    WHEN ");
     sbColumnSizeCase.append(sPrecision);
-    sbColumnSizeCase.append(" IS NULL THEN ");
+    sbColumnSizeCase.append(" IS NULL THEN CASE \r\n");
+    sbColumnSizeCase.append("      WHEN ");
+    sbColumnSizeCase.append(sDataType);
+    sbColumnSizeCase.append(" = 'NUMBER' THEN 38 \r\n");
+    sbColumnSizeCase.append("      ELSE ");
     sbColumnSizeCase.append(sLength);
     sbColumnSizeCase.append("\r\n");
+    sbColumnSizeCase.append("    END");
     sbColumnSizeCase.append("    ELSE ");
     sbColumnSizeCase.append(sPrecision);
     sbColumnSizeCase.append("\r\n");
@@ -356,7 +361,7 @@ public class OracleDatabaseMetaData
       "  C.COLUMN_NAME AS COLUMN_NAME,\r\n" +
       getDataTypeCase("C.DATA_TYPE","T.TYPECODE") + " AS DATA_TYPE,\r\n" +
       getTypeNameCase("C.DATA_TYPE","C.DATA_TYPE_OWNER","C.DATA_TYPE") + " AS TYPE_NAME,\r\n" +
-      getSizeCase("C.DATA_LENGTH","C.DATA_PRECISION") + " AS COLUMN_SIZE,\r\n" +
+      getSizeCase("C.DATA_TYPE","C.DATA_LENGTH","C.DATA_PRECISION") + " AS COLUMN_SIZE,\r\n" +
       "  CAST(NULL AS NUMBER) AS BUFFER_LENGTH,\r\n" +
       "  C.DATA_SCALE AS DECIMAL_DIGITS,\r\n" +
       "  10 AS NUM_PREC_RADIX,\r\n" +
@@ -481,7 +486,7 @@ public class OracleDatabaseMetaData
 			"A.ATTR_NAME as ATTR_NAME,\r\n" +
       getDataTypeCase("A.ATTR_TYPE_NAME","T.TYPECODE") + " AS DATA_TYPE,\r\n" +
 			getTypeNameCase("A.ATTR_TYPE_NAME","A.ATTR_TYPE_OWNER","A.ATTR_TYPE_NAME") + " AS ATTR_TYPE_NAME,\r\n" +
-			getSizeCase("A.LENGTH","A.PRECISION") + " as ATTR_SIZE,\r\n" +
+			getSizeCase("A.ATTR_TYPE_NAME","A.LENGTH","A.PRECISION") + " as ATTR_SIZE,\r\n" +
 			"A.SCALE as DECIMAL_DIGITS,\r\n" +
 			"10 as NUM_PREC_RADIX,\r\n" +
       String.valueOf(DatabaseMetaData.attributeNullableUnknown)+" AS NULLABLE,\r\n" +
@@ -695,7 +700,7 @@ public class OracleDatabaseMetaData
     sbSql.append(" AS DATA_TYPE,\r\n");
     sbSql.append(getTypeNameCase("A.DATA_TYPE","A.TYPE_OWNER","A.TYPE_NAME"));
     sbSql.append(" AS TYPE_NAME,\r\n");
-    sbSql.append(getSizeCase("A.DATA_LENGTH","A.DATA_PRECISION"));
+    sbSql.append(getSizeCase("A.DATA_TYPE","A.DATA_LENGTH","A.DATA_PRECISION"));
     sbSql.append(" AS PRECISION,\r\n");
     sbSql.append("  A.DATA_LENGTH AS LENGTH,\r\n");
     sbSql.append("  A.DATA_SCALE AS SCALE,\r\n");

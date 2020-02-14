@@ -156,14 +156,23 @@ public class OracleMetaColumns
     {
       if (sTypeName.equalsIgnoreCase("NUMBER") || sTypeName.equalsIgnoreCase("NUMERIC"))
       {
-        if (iColumnSize >= 0)
+        if (iDecimals >= 0)
         {
-          if (iColumnSize <= 5)
-            pt = PreType.SMALLINT;
-          else if (iColumnSize <= 10)
-            pt = PreType.INTEGER;
-          else if (iDecimals <= 0)
-            pt = PreType.BIGINT;
+          if (iDecimals == 0)
+          {
+            if (iColumnSize <= 5)
+              pt = PreType.SMALLINT;
+            else if (iColumnSize <= 10)
+              pt = PreType.INTEGER;
+            else
+              pt = PreType.BIGINT;
+          }
+        }
+        else
+        {
+          pt = PreType.FLOAT;
+          iDecimals = PredefinedType.iUNDEFINED;
+          iColumnSize = PredefinedType.iUNDEFINED;
         }
       }
       else if (sTypeName.equalsIgnoreCase("DATE"))
@@ -355,11 +364,14 @@ public class OracleMetaColumns
       int iLength = super.getInt(_iPrecision);
       if (iLength <= 0)
         iLength = super.getInt(_iLength);
+      int iScale = super.getInt(_iScale);
+      if (super.wasNull())
+        iScale = PredefinedType.iUNDEFINED;
       int iDataType = getDataType(
         super.getInt(_iDataType),
         super.getString(_iTypeName),
         iLength,
-        super.getInt(_iScale),
+        iScale,
         _conn,
         super.getString(_iCatalog), 
         super.getString(_iSchema));
@@ -371,7 +383,7 @@ public class OracleMetaColumns
           sResult, 
           super.getInt(_iDataType),
           iLength, 
-          super.getInt(_iScale),
+          iScale,
           _conn,
           super.getString(_iCatalog), 
           super.getString(_iSchema));
@@ -391,13 +403,16 @@ public class OracleMetaColumns
     int iLength = super.getInt(_iPrecision);
     if (iLength <= 0)
       iLength = super.getInt(_iLength);
+    int iScale = super.getInt(_iScale);
+    if (super.wasNull())
+      iScale = PredefinedType.iUNDEFINED;
     if (columnIndex == _iDataType)
     {
       iResult = getDataType(
         super.getInt(_iDataType),
         super.getString(_iTypeName),
         iLength,
-        super.getInt(_iScale),
+        iScale,
         _conn,
         super.getString(_iCatalog), 
         super.getString(_iSchema));
@@ -409,7 +424,7 @@ public class OracleMetaColumns
         super.getInt(_iDataType),
         super.getString(_iTypeName),
         iLength,
-        super.getInt(_iScale),
+        iScale,
         _conn,
         super.getString(_iCatalog), 
         super.getString(_iSchema));
@@ -431,6 +446,9 @@ public class OracleMetaColumns
     long lLength = super.getLong(_iPrecision);
     if (lLength <= 0)
       lLength = super.getLong(_iLength);
+    int iScale = super.getInt(_iScale);
+    if (super.wasNull())
+      iScale = PredefinedType.iUNDEFINED;
     if ((columnIndex == _iLength) ||
         (columnIndex == _iPrecision))
     {
@@ -438,7 +456,7 @@ public class OracleMetaColumns
         super.getInt(_iDataType),
         super.getString(_iTypeName),
         (int)lLength,
-        super.getInt(_iScale),
+        iScale,
         _conn,
         super.getString(_iCatalog), 
         super.getString(_iSchema));
@@ -449,7 +467,7 @@ public class OracleMetaColumns
         super.getInt(_iDataType),
         super.getString(_iTypeName),
         lLength,
-        super.getInt(_iScale),
+        iScale,
         _conn,
         super.getString(_iCatalog), 
         super.getString(_iSchema));
