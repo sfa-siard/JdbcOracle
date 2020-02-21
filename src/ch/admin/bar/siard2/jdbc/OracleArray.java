@@ -30,7 +30,7 @@ public class OracleArray
    * @param sToken token to be matched.
    * @return shortened text if they match, null if they don't.
    */
-  private String matchToken(String sText, String sToken)
+  private static String matchToken(String sText, String sToken)
   {
     String sMatch = sText.substring(0,sToken.length());
     if (sMatch.equalsIgnoreCase(sToken))
@@ -48,7 +48,7 @@ public class OracleArray
    * @param iLength cardinality of VARRAY
    * @return true, if the source text matches the base type and the cardinality.
    */
-  private boolean matchesText(String sText, String sBaseType, int iLength)
+  private static boolean matchesText(String sText, String sBaseType, int iLength)
   {
     boolean bMatch = false;
     sText = sText.trim();
@@ -97,11 +97,12 @@ public class OracleArray
   /*------------------------------------------------------------------*/
   /** find or create an VARRAY type for the given base type and length
    * to which the PUBLIC has EXECUTE privileges.
+   * @param conn open native connection.
    * @param sBaseType full base type (e.g. "VARCHAR(255)")
    * @param iLength cardinality of the array.
    * @return type name of the VARRAY.
    */
-  public QualifiedId findOrCreateVarray(String sBaseType, int iLength)
+  public static QualifiedId findOrCreateVarray(oracle.jdbc.OracleConnection conn, String sBaseType, int iLength)
     throws SQLException
   {
     _il.enter(sBaseType,String.valueOf(iLength));
@@ -121,7 +122,7 @@ public class OracleArray
                   " AND P.GRANTEE = 'PUBLIC'\r\n" +
                   " AND S.TEXT LIKE 'TYPE%VARRAY(%)%OF%'";
     
-    Statement stmt = _conn.createStatement();
+    Statement stmt = conn.createStatement();
     _il.event("Query: "+sSql);
     ResultSet rs = stmt.executeQuery(sSql);
     while ((qiVarray == null) && rs.next())
@@ -143,7 +144,7 @@ public class OracleArray
         sVarrayType = sBaseType.substring(0,iParen).trim();
       ***/
       sVarrayType = sVarrayType +"_"+String.valueOf(iLength) + "_V";
-      qiVarray = new QualifiedId(null,_conn.getMetaData().getUserName(),sVarrayType);
+      qiVarray = new QualifiedId(null,conn.getMetaData().getUserName(),sVarrayType);
       
       StringBuilder sbSql = new StringBuilder();
       sbSql.append("CREATE TYPE ");
@@ -152,7 +153,7 @@ public class OracleArray
       sbSql.append(String.valueOf(iLength));
       sbSql.append(") OF ");
       sbSql.append(sBaseType);
-      stmt = _conn.createStatement();
+      stmt = conn.createStatement();
       _il.event("Query: "+sbSql.toString());
       int iReturn = stmt.executeUpdate(sbSql.toString());
       if (iReturn != 0)
@@ -161,7 +162,7 @@ public class OracleArray
       sbSql.append("GRANT EXECUTE ON ");
       sbSql.append(qiVarray.quote());
       sbSql.append(" TO PUBLIC");
-      stmt = _conn.createStatement();
+      stmt = conn.createStatement();
       iReturn = stmt.executeUpdate(sbSql.toString());
       if (iReturn != 0)
         throw new IllegalArgumentException("GRANT EXECUTE ON TYPE TO PUBLIC failed!");
@@ -176,7 +177,7 @@ public class OracleArray
     if (_oarray == null)
     {
       if (_qiVarray == null)
-        _qiVarray = findOrCreateVarray(_sBaseTypeName,_aoElements.length);
+        _qiVarray = findOrCreateVarray(_conn,_sBaseTypeName,_aoElements.length);
       _oarray = _conn.createARRAY(_qiVarray.format(), _aoElements);
       _lMaxLength = _oarray.getDescriptor().getMaxLength();
     }

@@ -37,8 +37,9 @@ public class OracleDataType
     try
     {
       OracleSqlFactory osf = (OracleSqlFactory)getSqlFactory();
-      OracleArray oa = (OracleArray)(osf.getConnection().createArrayOf(sBaseType, new Object[iLength]));
-      QualifiedId qiVarray = oa.findOrCreateVarray(sBaseType,iLength);
+      OracleConnection oconn = osf.getConnection();
+      oracle.jdbc.OracleConnection conn = (oracle.jdbc.OracleConnection)oconn.unwrap(Connection.class);
+      QualifiedId qiVarray = OracleArray.findOrCreateVarray(conn,sBaseType,iLength);
       sDataType = qiVarray.quote();
     }
     catch (SQLException se) { throw new IllegalArgumentException(se); }

@@ -136,6 +136,38 @@ public class OracleStatementTester extends BaseStatementTester
   } /* testExecute */
   
   @Test
+  public void testExecuteBug()
+  {
+    enter();
+    String sSqlCreate = "CREATE TABLE MACHIN(EVENT_ID BIGINT,\r\n" + 
+            "ATTR_LIST VARCHAR(255) ARRAY[2147483647])";
+    try
+    {
+      OracleDataSource dsOracle = new OracleDataSource();
+      dsOracle.setUrl(_sDB_URL);
+      dsOracle.setUser(_sDB_BUG_USER);
+      dsOracle.setPassword(_sDB_BUG_PASSWORD);
+      OracleConnection connOracle = (OracleConnection)dsOracle.getConnection();
+      connOracle.setAutoCommit(false);
+      Statement stmtOracle = (OracleStatement)connOracle.createStatement();
+      // stmtOracle = stmtOracle.unwrap(Statement.class);
+      try
+      {
+        int iResult = stmtOracle.executeUpdate(sSqlCreate);
+        assertEquals("Table creation failed!",0,iResult);
+      }
+      catch (SQLException se) { fail(EU.getExceptionMessage(se)); }
+      finally
+      {
+        try { stmtOracle.execute("DROP TABLE MACHIN CASCADE CONSTRAINTS"); }
+        catch(SQLException se) { fail(EU.getExceptionMessage(se)); }
+      }
+      connOracle.commit();
+    }
+    catch (SQLException se) { fail(EU.getExceptionMessage(se)); }
+  } /* testExecuteBug */
+  
+  @Test
   @Override
   public void testExecute_String_int()
   {
