@@ -1,6 +1,9 @@
 Release Notes for JdbcOracle 2.1
 ================================
 
+2.1.65
+Corrected upload of large arrays.
+
 2.1.63
 Corrected type mapping of NUMBER without precision and scale.
 
