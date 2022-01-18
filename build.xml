@@ -40,7 +40,7 @@ Created    : 16.06.2016, Simon Jutz
   <property name="cpjdbcbase" value="${dirlib}/${jarjdbcbase}"/> 
   <property name="cpjdbcbase-test" value="${dirlib}/${jarjdbcbase};${dirlib}/${jarjdbcbasetest}"/>
 	<!-- Oracle JDBC jars -->
-  <property name="jarojdbc" value="ojdbc6.jar"/>
+  <property name="jarojdbc" value="ojdbc8.jar"/>
   <property name="jarxdb" value="xdb6.jar"/>
   <property name="jarxmlparser" value="xmlparserv2.jar"/>
 	<property name="cporaclejdbc" value="${dirlib}/${jarojdbc};${dirlib}/${jarxdb};${dirlib}/${jarxmlparser}"/> 
@@ -242,10 +242,10 @@ Created    : 16.06.2016, Simon Jutz
 	
 	<!-- create and run all tests -->
   <property name="classdatasourcetester" value="ch.admin.bar.siard2.jdbcx.OracleDataSourceTester"/>
-  <property name="filedatasourcetest" value="datasource-test"/>
+  <property name="filedatasourcetest" value="datasource-test-1"/>
   <property name="classjdbctestsuite" value="ch.admin.bar.siard2.jdbc._OracleJdbcTestSuite"/>
   <property name="filejdbctests" value="jdbc-tests"/>
-	<target name="tests" depends="jar" if="dbuser">
+	<target name="test" depends="jar" if="dbuser">
     <echo message="${ant.project.name}: tests"/>
 		<!-- build the tests -->
     <javac debug="true" debuglevel="${debuglevel}"
@@ -306,7 +306,7 @@ Created    : 16.06.2016, Simon Jutz
   
   <!-- create the JAR file containing all tests -->
   <property name="jartest" value="${ant.project.name}-test.jar"/>
-  <target name="jartest" depends="tests" if="dbuser">
+  <target name="jartest" depends="test" if="dbuser">
     <echo message="${ant.project.name}: jartest"/>
     <jar jarfile="${dirdist}/${jartest}">
       <fileset dir="${dirbuildtests}">
@@ -317,7 +317,7 @@ Created    : 16.06.2016, Simon Jutz
   </target>
   
   <!-- create the ZIP file with binaries for Windows and LINUX -->
-  <target name="zip" depends="tests,jartest">
+  <target name="zip" depends="test,jartest">
     <echo message="${ant.project.name}: zip"/>
     <zip zipfile="${dirdist}/${ant.project.name}-${version}.${revision}.zip">
       <zipfileset dir="${dirdist}" prefix="${ant.project.name}/${dirlib}">

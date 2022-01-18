@@ -8,7 +8,7 @@ Implementation-Version: 2.1.67
 Implementation-Vendor: Enter AG, Rüti ZH, Switzerland
 Main-Class: ch.admin.bar.siard2.jdbc.OracleDriver
 Built-Date: 25. Sep 2020
-Class-Path: ojdbc6.jar
+Class-Path: ojdbc8.jar
   jdbcbase.jar
   sqlparser.jar
   antlr-runtime-4.5.2.jar
