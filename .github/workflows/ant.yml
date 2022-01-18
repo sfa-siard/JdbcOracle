@@ -23,17 +23,16 @@ jobs:
         with:
           java-version: '8'
           distribution: 'adopt'
+      - name: check that custom setup script is available
+        run: ls -la ./docker/setup
       - name: build oracle docker image
         run: ./docker/build-oracle-image.sh
       - name: run docker-compose
-        uses: sudo-bot/action-docker-compose@latest
-        with:
-          # https://docs.docker.com/compose/reference/overview/
-          cli-args: "up -d"
+        run: docker-compose up -d
       # TODO: find a better way to wait until the database is ready
-      - name: Sleep for 500 seconds
-        run: sleep 500s
-        shell: bash
+      #- name: Sleep for 500 seconds
+      #  run: sleep 500s
+      #  shell: bash
       - name: check logs of docker-compose
         uses: sudo-bot/action-docker-compose@latest
         with:
