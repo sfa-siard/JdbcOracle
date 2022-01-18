@@ -8,8 +8,7 @@ services:
       ORACLE_PWD: SYSTEM
       ORACLE_PDB: XEPDB1
     volumes:
-      # - ora-data:/opt/oracle/oradata # persistent oracle database data.
-      - ./docker/setup:/opt/oracle/scripts/setup # to be run after database setup, here are all sql and shell scripts needed for DB setup
+      - ./docker/setup:/opt/oracle/scripts/setup
     ports:
       - 1521:1521
 volumes:
