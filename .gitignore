@@ -24,3 +24,6 @@ out/
 
 # asdf tools configuration
 .tool-versions
+
+# folder where the script build-oracle-image.sh will clone the oracle/docker-images repo into
+docker-images
