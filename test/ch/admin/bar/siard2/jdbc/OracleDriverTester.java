@@ -24,13 +24,13 @@ import ch.enterag.utils.base.ConnectionProperties;
  */
 public class OracleDriverTester {
 	private static final ConnectionProperties _cp = new ConnectionProperties();	  
-	private static final String _sDB_URL = OracleDriver.getUrl(_cp.getHost()+":"+_cp.getPort()+":"+_cp.getInstance());
+	private static final String _sDB_URL = OracleDriver.getUrl(_cp.getHost()+":"+_cp.getPort()+"/"+_cp.getInstance());
 	private static final String _sDB_USER = _cp.getUser();
 	private static final String _sDB_PASSWORD = _cp.getPassword();
 	
  	private static final String sDRIVER_CLASS = "ch.admin.bar.siard2.jdbc.OracleDriver";
   // private static final String sTEST_ORACLE_URL = "jdbc:oracle:thin:@localhost:1521:orcl";;
-  private static final String sTEST_ORACLE_URL = "jdbc:oracle:thin:@localhost:1521/orcl.enterag.ch";;
+  private static final String sTEST_ORACLE_URL = "jdbc:oracle:thin:@localhost:1521/XEPDB1";;
  	private static final String sINVALID_ORACLE_URL = "jdbc:sqlserver://localhost";
  	
  	private Driver _driver = null;
