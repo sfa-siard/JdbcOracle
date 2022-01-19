@@ -1,5 +1,5 @@
 ALTER SESSION SET CONTAINER=XEPDB1;
-CREATE USER buguser IDENTIFIED BY bugpwd QUOTA UNLIMITED ON USERS;
-GRANT CONNECT, RESOURCE TO buguser;
-ALTER USER buguser QUOTA UNLIMITED ON USERS;
-exit;
+
+-- OracleConnectionTesters needs a schema "TEST_SCHEMA" - create the user (oracle treats users as schemas?)
+CREATE USER TEST_SCHEMA identified by testschemapwd;
+
