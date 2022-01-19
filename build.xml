@@ -284,7 +284,7 @@ Created    : 16.06.2016, Simon Jutz
       outfile="${filedatasourcetest}"
       todir="${dirtmp}"/>
     </junit>
-    <junit haltonerror="true" haltonfailure="false" fork="true" printsummary="on" dir="${basedir}" showoutput="yes">
+    <junit haltonerror="true" haltonfailure="true" fork="true" printsummary="on" dir="${basedir}" showoutput="yes">
       <sysproperty key="java.util.logging.config.file" value="${diretc}/debug.properties"/>
       <formatter type="plain"/>
       <classpath>
