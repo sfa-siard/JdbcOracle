@@ -13,7 +13,7 @@ import ch.admin.bar.siard2.oracle.*;
 public class OracleConnectionTester  extends BaseConnectionTester
 {
   private static final ConnectionProperties _cp = new ConnectionProperties();   
-  private static final String _sDB_URL = OracleDriver.getUrl(_cp.getHost()+":"+_cp.getPort()+"/"+_cp.getInstance());
+  private static final String _sDB_URL = OracleDriver.getUrl(_cp.getHost()+":"+_cp.getPort()+":"+_cp.getInstance());
   private static final String _sDBA_USER = _cp.getDbaUser();
   private static final String _sDBA_PASSWORD = _cp.getDbaPassword();
   private static final String _sDB_USER = _cp.getUser();
