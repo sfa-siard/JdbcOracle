@@ -24,7 +24,7 @@ import ch.enterag.utils.base.ConnectionProperties;
  */
 public class OracleDriverTester {
 	private static final ConnectionProperties _cp = new ConnectionProperties();	  
-	private static final String _sDB_URL = OracleDriver.getUrl(_cp.getHost()+":"+_cp.getPort()+"/"+_cp.getInstance());
+	private static final String _sDB_URL = OracleDriver.getUrl(_cp.getHost()+":"+_cp.getPort()+":"+_cp.getInstance());
 	private static final String _sDB_USER = _cp.getUser();
 	private static final String _sDB_PASSWORD = _cp.getPassword();
 	
@@ -89,7 +89,7 @@ public class OracleDriverTester {
 		int iMajorVersion = _driver.getMajorVersion();
 		int iMinorVersion = _driver.getMinorVersion();
 		String sVersion = String.valueOf(iMajorVersion)+"."+String.valueOf(iMinorVersion);
-		assertEquals("Wrong Oracle version "+sVersion+" found!", "18.15", sVersion);
+		assertEquals("Wrong Oracle version "+sVersion+" found!", "12.1", sVersion);
 	} /* testVersion */
 	  
 	@Test
@@ -98,7 +98,7 @@ public class OracleDriverTester {
 		try
 		{
 			DriverPropertyInfo[] apropInfo = _driver.getPropertyInfo(_sDB_URL, new Properties());
-			assertSame("Unexpected driver properties!", 121, apropInfo.length);
+			assertSame("Unexpected driver properties!", 99, apropInfo.length);
 		}
 		catch(SQLException se) { fail(se.getClass().getName()+": "+se.getMessage()); }
 	} /* testDriverProperties */
