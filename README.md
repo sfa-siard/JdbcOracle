@@ -8,14 +8,7 @@ For building the binaries, Java JDK (1.8 or higher), Ant, and Git must
 have been installed. Adjust build.properties to your local configuration. In it using a text editor the local values must be
 entered as directed by the comments.
 
-A running instance of Oracle DB is needed to run the tests - unfortunatly, oracle does not provide any ready tu use docker images and you have to build it yourself
-But we will help you with this! Just run:
-
-```shell
-./docker/build-oracle-image.sh
-```
-
-Note: this will clone the necessary repository to build the docker image into the project folder. It will also download the necessary binaries to build the oracle 18xe image - and building the image will take a some time. Go and grab a coffee now!
+A running instance of Oracle DB is needed to run the tests
 
 ```shell
 docker-compose up -d
