@@ -268,6 +268,10 @@ public class OracleDatabaseMetaDataTester
   } /* testColumnsOracleComplex */
   
   @Test
+  @Ignore
+  /*
+  See ch.admin.bar.siard2.jdbc.OracleDatabaseMetaDataTester.testColumnsOracleSimple why this test is ignored
+   */
   public void testColumnsSqlSimple()
   {
     enter();
