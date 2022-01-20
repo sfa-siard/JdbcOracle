@@ -15,7 +15,7 @@ import ch.enterag.utils.base.ConnectionProperties;
 
 public class OracleDataSourceTester {
 	private static final ConnectionProperties _cp = new ConnectionProperties();	  
-	private static final String _sDB_URL = "jdbc:oracle:thin:@"+_cp.getHost()+":"+_cp.getPort()+":"+_cp.getInstance();
+	private static final String _sDB_URL = "jdbc:oracle:thin:@"+_cp.getHost()+":"+_cp.getPort()+"/"+_cp.getInstance();
 	private static final String _sDB_USER = _cp.getUser();
 	private static final String _sDB_PASSWORD = _cp.getPassword();
 	
