@@ -4,7 +4,7 @@ This package contains the JDBC Wrapper for Oracle DBMS for SIARD 2.2.
 
 
 ## Getting started (for devs)
-For building the binaries, Java JDK (1.8 or higher), Ant, and Git must
+For building the binaries, Java JDK (1.8 or higher) and Ant must
 have been installed. Adjust build.properties to your local configuration. In it using a text editor the local values must be
 entered as directed by the comments.
 
