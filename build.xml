@@ -151,7 +151,7 @@ Created    : 16.06.2016, Simon Jutz
   </target>
   
   <!-- build the JdbcOracle classes -->
-  <target name="build" depends="init,revision">
+  <target name="build" depends="init">
     <echo message="${ant.project.name}: build"/>
     <!-- without this, the package-info class is not generated! -->
     <touch>
@@ -168,10 +168,23 @@ Created    : 16.06.2016, Simon Jutz
       destdir="${dirbuildclasses}">
     </javac>
   </target>
+
+  <!-- create the JAR file containing all classes to run the tests-->
+  <property name="jarfile" value="${ant.project.name}.jar"/>
+  <target name="jar-test" depends="build">
+    <echo message="${ant.project.name}: jar"/>
+    <jar jarfile="${dirdist}/${jarfile}"
+         manifest="${filemanifest}">
+      <fileset dir="${dirbuildclasses}">
+        <include name="**/*.class"/>
+        <include name="**/res/*.*"/>
+      </fileset>
+    </jar>
+  </target>
   
   <!-- create the JAR file containing all classes -->
   <property name="jarfile" value="${ant.project.name}.jar"/>
-  <target name="jar" depends="build">
+  <target name="jar" depends="jar-with-test">
     <echo message="${ant.project.name}: jar"/>
     <jar jarfile="${dirdist}/${jarfile}"
        manifest="${filemanifest}">
@@ -187,7 +200,7 @@ Created    : 16.06.2016, Simon Jutz
   <property name="filedatasourcetest" value="datasource-test"/>
   <property name="classjdbctestsuite" value="ch.admin.bar.siard2.jdbc._OracleJdbcTestSuite"/>
   <property name="filejdbctests" value="jdbc-tests"/>
-	<target name="test" depends="jar" if="dbuser">
+	<target name="test" depends="jar-test" if="dbuser">
     <echo message="${ant.project.name}: tests"/>
 		<!-- build the tests -->
     <javac debug="true" debuglevel="${debuglevel}"
@@ -248,7 +261,7 @@ Created    : 16.06.2016, Simon Jutz
   
   <!-- create the JAR file containing all tests -->
   <property name="jartest" value="${ant.project.name}-test.jar"/>
-  <target name="jartest" depends="test" if="dbuser">
+  <target name="jar-with-test" depends="test, revision" if="dbuser">
     <echo message="${ant.project.name}: jartest"/>
     <jar jarfile="${dirdist}/${jartest}">
       <fileset dir="${dirbuildtests}">
@@ -259,7 +272,7 @@ Created    : 16.06.2016, Simon Jutz
   </target>
   
   <!-- create the ZIP file with binaries for Windows and LINUX -->
-  <target name="zip" depends="test,jartest">
+  <target name="release" depends="jar">
     <echo message="${ant.project.name}: zip"/>
     <zip zipfile="${dirdist}/${ant.project.name}-${version}.${revision}.zip">
       <zipfileset dir="${dirdist}" prefix="${ant.project.name}/${dirlib}">
