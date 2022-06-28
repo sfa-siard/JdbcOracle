@@ -223,6 +223,7 @@ public class OracleDatabaseMetaData
     mapDataType.put("XMLTYPE",Integer.valueOf(Types.SQLXML));
     mapDataType.put("COLLECTION",Integer.valueOf(Types.ARRAY));
     mapDataType.put("OBJECT",Integer.valueOf(Types.STRUCT));
+    mapDataType.put("DATALINK", Integer.valueOf(Types.BLOB));
     StringBuilder sbDataTypeCase = new StringBuilder("  CASE\r\n");
     for (Iterator<String> iterTypeName = mapDataType.keySet().iterator(); iterTypeName.hasNext(); )
     {

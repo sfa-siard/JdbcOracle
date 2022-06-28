@@ -762,4 +762,9 @@ public class OracleConnection extends BaseConnection implements Connection {
 		return iNetWorkTimeout;
 	} /* getNetworkTimeout */
 
+	@Override
+	public Blob createDatalinkObject() throws SQLException {
+		return createBlob();
+	}
+
 } /* class OracleConnection */
