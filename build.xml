@@ -272,7 +272,7 @@ Created    : 16.06.2016, Simon Jutz
   </target>
   
   <!-- create the ZIP file with binaries for Windows and LINUX -->
-  <target name="release" depends="jar">
+  <target name="release" depends="jar, jar-with-test">
     <echo message="${ant.project.name}: zip"/>
     <zip zipfile="${dirdist}/${ant.project.name}-${version}.${revision}.zip">
       <zipfileset dir="${dirdist}" prefix="${ant.project.name}/${dirlib}">
