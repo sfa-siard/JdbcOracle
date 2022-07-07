@@ -29,7 +29,7 @@ public class TestOracleDatabase
   public static QualifiedId getQualifiedObjectType() { return new QualifiedId(null,_sTEST_SCHEMA,_sUDT_OBJECT); }
 	public static final String _sUDT_COMPLEX = "TESTCOMPLEXTYPE";
   public static QualifiedId getQualifiedComplexType() { return new QualifiedId(null,_sTEST_SCHEMA,_sUDT_COMPLEX); }
-  public static final String _sDIRECTORY = "BFILE_DIRECTORY";
+  public static final String _sDIRECTORY = "oradata";
   /* directory on Oracle server */
 	public static final String _sBFILE_DIRECTORY = _ocp.getBFileDirectory();
   /* directory on local machine (mounted share) */

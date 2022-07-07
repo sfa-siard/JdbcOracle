@@ -2,6 +2,7 @@ package ch.admin.bar.siard2.jdbc;
 
 import java.io.*;
 import java.math.*;
+import java.net.MalformedURLException;
 import java.text.*;
 import java.sql.*;
 import java.sql.Date;
@@ -834,13 +835,39 @@ public class OracleResultSetTester
   {
     enter();
   } /* testGetRowId */
-  
+
   @Override
   @Test
-  public void testGetUrl()
-  {
-    enter();
-  } /* testGetUrl */
+  public void testGetUrl() throws MalformedURLException, SQLException {
+//    enter();
+//
+//    // given
+//    openResultSet(_sSqlQuerySimple, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
+//    TestColumnDefinition tcd = findColumnDefinition(TestSqlDatabase._listCdSimple, TestSqlDatabase.COLUMN_DATALINK);
+//
+//    // when
+//    MsSqlResultSet rs = (MsSqlResultSet) getResultSet();
+//    URL url = rs.getURL(tcd.getName());
+//
+//    // then
+//    assertEquals(new URL((String) tcd.getValue()), url);
+  }
+
+  @Test
+  public void testUpdateUrl() throws MalformedURLException, SQLException {
+//    enter();
+//
+//    // given
+//    openResultSet(_sSqlQuerySimple, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
+//    TestColumnDefinition tcd = findColumnDefinition(TestSqlDatabase._listCdSimple, TestSqlDatabase.COLUMN_DATALINK);
+//
+//    // when
+//    MsSqlResultSet rs = (MsSqlResultSet) getResultSet();
+//    URL url = rs.updateURL(tcd.getName(), new URL((String) tcd.getValue()));
+//
+//    // then
+//    assertEquals(new URL((String) tcd.getValue()), url);
+  }
   
   @Override
   @Test

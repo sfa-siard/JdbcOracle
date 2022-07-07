@@ -44,19 +44,20 @@ public class OraclePredefinedType
 		mapISO_TO_ORACLE.put(PreType.BINARY, "RAW"); // or BLOB
 		mapISO_TO_ORACLE.put(PreType.VARBINARY, "RAW"); // or BLOB
 		mapISO_TO_ORACLE.put(PreType.BLOB,"BLOB");
-    mapISO_TO_ORACLE.put(PreType.NUMERIC,"NUMERIC");
-    mapISO_TO_ORACLE.put(PreType.DECIMAL,"DECIMAL");
-    mapISO_TO_ORACLE.put(PreType.SMALLINT,"SMALLINT");
-    mapISO_TO_ORACLE.put(PreType.INTEGER,"INTEGER");
-    mapISO_TO_ORACLE.put(PreType.BIGINT,"NUMBER(20)");
-    mapISO_TO_ORACLE.put(PreType.FLOAT,"BINARY_DOUBLE");
-    mapISO_TO_ORACLE.put(PreType.REAL,"BINARY_FLOAT");
-    mapISO_TO_ORACLE.put(PreType.DOUBLE,"BINARY_DOUBLE");
-    mapISO_TO_ORACLE.put(PreType.BOOLEAN,"NUMBER(1)");
-    mapISO_TO_ORACLE.put(PreType.DATE,"DATE");
-    mapISO_TO_ORACLE.put(PreType.TIME,"TIMESTAMP");
-    mapISO_TO_ORACLE.put(PreType.TIMESTAMP,"TIMESTAMP"); // or DATE
-    mapISO_TO_ORACLE.put(PreType.INTERVAL,"INTERVAL");
+        mapISO_TO_ORACLE.put(PreType.NUMERIC,"NUMERIC");
+        mapISO_TO_ORACLE.put(PreType.DECIMAL,"DECIMAL");
+        mapISO_TO_ORACLE.put(PreType.SMALLINT,"SMALLINT");
+        mapISO_TO_ORACLE.put(PreType.INTEGER,"INTEGER");
+        mapISO_TO_ORACLE.put(PreType.BIGINT,"NUMBER(20)");
+        mapISO_TO_ORACLE.put(PreType.FLOAT,"BINARY_DOUBLE");
+        mapISO_TO_ORACLE.put(PreType.REAL,"BINARY_FLOAT");
+        mapISO_TO_ORACLE.put(PreType.DOUBLE,"BINARY_DOUBLE");
+        mapISO_TO_ORACLE.put(PreType.BOOLEAN,"NUMBER(1)");
+        mapISO_TO_ORACLE.put(PreType.DATE,"DATE");
+        mapISO_TO_ORACLE.put(PreType.TIME,"TIMESTAMP");
+        mapISO_TO_ORACLE.put(PreType.TIMESTAMP,"TIMESTAMP"); // or DATE
+        mapISO_TO_ORACLE.put(PreType.INTERVAL,"INTERVAL");
+        mapISO_TO_ORACLE.put(PreType.DATALINK,"BLOB");
 	}
 	
 	/*------------------------------------------------------------------*/
@@ -102,6 +103,8 @@ public class OraclePredefinedType
           else
             sType = sType + formatLength();
           break;
+        case DATALINK:
+            sType = K.BLOB.getKeyword();
         case NUMERIC:
         case DECIMAL:
           sType = sType + formatPrecisionScale();
