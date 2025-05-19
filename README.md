@@ -26,7 +26,7 @@ Create a new release
 ant release
 ```
 
-This task increments the version number in the project [MANIFEST.MF](./src/META-INF/MANIFEST.MF)
+This task increments the version number in the project [MANIFEST.MF](src/main/resources/META-INF/MANIFEST.MF)
 
 
 ## Documentation
