@@ -18,7 +18,6 @@ import org.testcontainers.containers.OracleContainer;
 import org.testcontainers.utility.MountableFile;
 
 public class OracleConnectionTester extends BaseConnectionTester {
-    private static final ConnectionProperties _cp = new ConnectionProperties();
     private static final String _sDB_USER = "test";
     private static final String _sDB_PASSWORD = "test";
 

@@ -14,7 +14,6 @@ import ch.admin.bar.siard2.jdbcx.*;
 import org.testcontainers.containers.OracleContainer;
 
 public class OracleDatabaseMetaDataBugTester {
-    private static final ConnectionProperties _cp = new ConnectionProperties();
     private static final String _sDB_USER = "SYSTEM";
     private static final String _sDB_PASSWORD = "test";
     private static final String _sTABLE_BUG = "BUGSIMONE";

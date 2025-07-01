@@ -27,7 +27,6 @@ public class OracleResultSetTester extends BaseResultSetTester {
     @ClassRule
     public final static OracleContainer db = new OracleContainer("gvenzl/oracle-xe:21-slim-faststart");
 
-    private static final ConnectionProperties _cp = new ConnectionProperties();
     private static final String _sDBA_USER = "SYSTEM";
     private static final String _sDBA_PASSWORD = "test";
     private static final String _sDB_USER = "test";

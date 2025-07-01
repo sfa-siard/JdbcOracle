@@ -17,7 +17,6 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 
-import ch.enterag.utils.base.ConnectionProperties;
 import org.testcontainers.containers.OracleContainer;
 
 /**
@@ -25,7 +24,6 @@ import org.testcontainers.containers.OracleContainer;
  *
  */
 public class OracleDriverTester {
-	private static final ConnectionProperties _cp = new ConnectionProperties();	  
 
  	private static final String sDRIVER_CLASS = "ch.admin.bar.siard2.jdbc.OracleDriver";
   private static final String sTEST_ORACLE_URL = "jdbc:oracle:thin:@localhost:1521/XEPDB1";;

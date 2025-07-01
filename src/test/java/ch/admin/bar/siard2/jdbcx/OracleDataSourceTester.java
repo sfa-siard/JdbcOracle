@@ -9,7 +9,6 @@ import javax.sql.DataSource;
 
 import org.junit.*;
 
-import ch.enterag.utils.base.ConnectionProperties;
 import org.testcontainers.containers.OracleContainer;
 
 public class OracleDataSourceTester {
@@ -17,7 +16,6 @@ public class OracleDataSourceTester {
     @ClassRule
     public final static OracleContainer db = new OracleContainer("gvenzl/oracle-xe:21-slim-faststart");
 
-    private static final ConnectionProperties _cp = new ConnectionProperties();
     private static final String _sDB_USER = "SYSTEM";
     private static final String _sDB_PASSWORD = "test";
 

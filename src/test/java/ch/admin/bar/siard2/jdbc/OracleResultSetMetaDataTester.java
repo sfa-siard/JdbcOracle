@@ -15,12 +15,10 @@ import ch.admin.bar.siard2.oracle.*;
 import org.testcontainers.containers.OracleContainer;
 
 public class OracleResultSetMetaDataTester extends BaseResultSetMetaDataTester {
-    private static final ConnectionProperties _cp = new ConnectionProperties();
 
     @ClassRule
     public final static OracleContainer db = new OracleContainer("gvenzl/oracle-xe:21-slim-faststart");
 
-    private static final String _sDB_URL = OracleDriver.getUrl(_cp.getHost() + ":" + _cp.getPort() + "/" + _cp.getInstance());
     private static final String _sDBA_USER = "SYSTEM";
     private static final String _sDBA_PASSWORD = "test";
     private static final String _sDB_USER = "test";
@@ -91,7 +89,7 @@ public class OracleResultSetMetaDataTester extends BaseResultSetMetaDataTester {
     public void setUp() {
         try {
             OracleDataSource dsOracle = new OracleDataSource();
-            dsOracle.setUrl(_sDB_URL);
+            dsOracle.setUrl(db.getJdbcUrl());
             dsOracle.setUser(_sDB_USER);
             dsOracle.setPassword(_sDB_PASSWORD);
             Connection conn = dsOracle.getConnection();
