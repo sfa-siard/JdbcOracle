@@ -14,9 +14,11 @@ import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 import ch.enterag.utils.base.ConnectionProperties;
+import org.testcontainers.containers.OracleContainer;
 
 /**
  * @author jutzs
@@ -24,17 +26,17 @@ import ch.enterag.utils.base.ConnectionProperties;
  */
 public class OracleDriverTester {
 	private static final ConnectionProperties _cp = new ConnectionProperties();	  
-	private static final String _sDB_URL = OracleDriver.getUrl(_cp.getHost()+":"+_cp.getPort()+"/"+_cp.getInstance());
-	private static final String _sDB_USER = _cp.getUser();
-	private static final String _sDB_PASSWORD = _cp.getPassword();
-	
+
  	private static final String sDRIVER_CLASS = "ch.admin.bar.siard2.jdbc.OracleDriver";
-  // private static final String sTEST_ORACLE_URL = "jdbc:oracle:thin:@localhost:1521:orcl";;
   private static final String sTEST_ORACLE_URL = "jdbc:oracle:thin:@localhost:1521/XEPDB1";;
  	private static final String sINVALID_ORACLE_URL = "jdbc:sqlserver://localhost";
  	
  	private Driver _driver = null;
  	private Connection _conn = null;
+
+
+	@ClassRule
+	public final static OracleContainer db = new OracleContainer("gvenzl/oracle-xe:21-slim-faststart");
  	
 	@Before
 	public void setUp() {
@@ -42,7 +44,7 @@ public class OracleDriverTester {
 		{
 			Class.forName(sDRIVER_CLASS); 
 			_driver = DriverManager.getDriver(sTEST_ORACLE_URL);
-			_conn = DriverManager.getConnection(_sDB_URL, _sDB_USER, _sDB_PASSWORD);
+			_conn = DriverManager.getConnection(db.getJdbcUrl(), db.getUsername(), db.getPassword());
 		} catch(ClassNotFoundException cnfe) { fail(cnfe.getClass().getName()+": " + cnfe.getMessage());
 		} catch(SQLException se) { fail(se.getClass().getName()+": " + se.getMessage()); }
 	} /* setUp */
@@ -77,7 +79,7 @@ public class OracleDriverTester {
 	{
 		try
 	    {
-			assertSame("Valid Oracle URL not accepted!", true, _driver.acceptsURL(_sDB_URL));
+			assertSame("Valid Oracle URL not accepted!", true, _driver.acceptsURL(db.getJdbcUrl()));
 			assertSame("Invalid Oracle URL accepted!", false, _driver.acceptsURL(sINVALID_ORACLE_URL));
 	    }
 		catch(SQLException se) { fail(se.getClass().getName()+": "+se.getMessage()); }
@@ -97,7 +99,7 @@ public class OracleDriverTester {
 	{
 		try
 		{
-			DriverPropertyInfo[] apropInfo = _driver.getPropertyInfo(_sDB_URL, new Properties());
+			DriverPropertyInfo[] apropInfo = _driver.getPropertyInfo(db.getJdbcUrl(), new Properties());
 			assertSame("Unexpected driver properties!", 99, apropInfo.length);
 		}
 		catch(SQLException se) { fail(se.getClass().getName()+": "+se.getMessage()); }

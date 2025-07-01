@@ -9,6 +9,7 @@ import org.junit.*;
 import ch.admin.bar.siard2.jdbcx.*;
 import ch.enterag.utils.*;
 
+@Ignore("seems to depend on setup @enterag")
 public class OeMetaDataTester
 {
   private static final String _sDB_URL = OracleDriver.getUrl("vmw10.enterag.ch:1521:orcl");
