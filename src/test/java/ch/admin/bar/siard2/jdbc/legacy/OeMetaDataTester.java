@@ -1,9 +1,11 @@
-package ch.admin.bar.siard2.jdbc;
+package ch.admin.bar.siard2.jdbc.legacy;
 
 import static org.junit.Assert.*;
 
 import java.sql.*;
 
+import ch.admin.bar.siard2.jdbc.OracleConnection;
+import ch.admin.bar.siard2.jdbc.OracleDriver;
 import org.junit.*;
 
 import ch.admin.bar.siard2.jdbcx.*;

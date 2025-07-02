@@ -1,4 +1,4 @@
-package ch.admin.bar.siard2.jdbcx;
+package ch.admin.bar.siard2.jdbcx.legacy;
 
 import static org.junit.Assert.*;
 
@@ -7,6 +7,7 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+import ch.admin.bar.siard2.jdbcx.OracleDataSource;
 import org.junit.*;
 
 import org.testcontainers.containers.OracleContainer;

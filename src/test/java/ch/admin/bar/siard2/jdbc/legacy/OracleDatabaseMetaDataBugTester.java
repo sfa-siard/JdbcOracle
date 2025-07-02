@@ -1,4 +1,4 @@
-package ch.admin.bar.siard2.jdbc;
+package ch.admin.bar.siard2.jdbc.legacy;
 
 import java.math.*;
 import java.sql.*;
@@ -6,9 +6,8 @@ import java.util.*;
 
 import static org.junit.Assert.*;
 
+import ch.admin.bar.siard2.jdbc.OracleConnection;
 import org.junit.*;
-import ch.enterag.utils.*;
-import ch.enterag.utils.base.*;
 import ch.enterag.utils.database.*;
 import ch.admin.bar.siard2.jdbcx.*;
 import org.testcontainers.containers.OracleContainer;

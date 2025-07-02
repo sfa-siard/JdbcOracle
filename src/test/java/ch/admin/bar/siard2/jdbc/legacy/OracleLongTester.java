@@ -1,5 +1,8 @@
-package ch.admin.bar.siard2.jdbc;
+package ch.admin.bar.siard2.jdbc.legacy;
 
+import ch.admin.bar.siard2.jdbc.OracleConnection;
+import ch.admin.bar.siard2.jdbc.OracleDatabaseMetaData;
+import ch.admin.bar.siard2.jdbc.OracleResultSet;
 import ch.admin.bar.siard2.jdbcx.OracleDataSource;
 import ch.enterag.utils.jdbc.BaseDatabaseMetaDataTester;
 import lombok.SneakyThrows;

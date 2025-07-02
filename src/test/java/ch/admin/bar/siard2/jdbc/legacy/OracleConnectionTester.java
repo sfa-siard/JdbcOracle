@@ -1,21 +1,18 @@
-package ch.admin.bar.siard2.jdbc;
+package ch.admin.bar.siard2.jdbc.legacy;
 
 import java.sql.*;
 
 import static org.junit.Assert.*;
 
-import ch.admin.bar.siard2.SqlScripts;
-import ch.admin.bar.siard2.TestResourcesResolver;
+import ch.admin.bar.siard2.jdbc.OracleConnection;
+import ch.admin.bar.siard2.oracle.legacy.TestOracleDatabase;
+import ch.admin.bar.siard2.oracle.legacy.TestSqlDatabase;
 import lombok.SneakyThrows;
 import org.junit.*;
-import ch.enterag.utils.*;
 import ch.enterag.sqlparser.identifier.*;
-import ch.enterag.utils.base.*;
 import ch.enterag.utils.jdbc.*;
 import ch.admin.bar.siard2.jdbcx.*;
-import ch.admin.bar.siard2.oracle.*;
 import org.testcontainers.containers.OracleContainer;
-import org.testcontainers.utility.MountableFile;
 
 public class OracleConnectionTester extends BaseConnectionTester {
     private static final String _sDB_USER = "test";

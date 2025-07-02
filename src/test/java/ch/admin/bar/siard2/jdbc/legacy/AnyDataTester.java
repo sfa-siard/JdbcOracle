@@ -1,4 +1,4 @@
-package ch.admin.bar.siard2.jdbc;
+package ch.admin.bar.siard2.jdbc.legacy;
 
 import ch.admin.bar.siard2.jdbcx.OracleDataSource;
 import ch.enterag.utils.jdbc.BaseDatabaseMetaDataTester;

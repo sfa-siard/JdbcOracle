@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ch.admin.bar.siard2.jdbc;
+package ch.admin.bar.siard2.jdbc.legacy;
 
 import static org.junit.Assert.*;
 
@@ -12,6 +12,8 @@ import java.sql.DriverPropertyInfo;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import ch.admin.bar.siard2.jdbc.OracleConnection;
+import ch.admin.bar.siard2.jdbc.OracleDriver;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;

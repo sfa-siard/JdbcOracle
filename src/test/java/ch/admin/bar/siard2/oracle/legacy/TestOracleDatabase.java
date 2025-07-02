@@ -1,4 +1,4 @@
-package ch.admin.bar.siard2.oracle;
+package ch.admin.bar.siard2.oracle.legacy;
 
 import static org.junit.Assert.*;
 
@@ -9,6 +9,7 @@ import java.sql.Date;
 import java.util.*;
 
 import ch.admin.bar.siard2.jdbc.*;
+import ch.admin.bar.siard2.oracle.OracleLiterals;
 import ch.enterag.utils.*;
 import ch.enterag.utils.base.*;
 import ch.enterag.sqlparser.*;

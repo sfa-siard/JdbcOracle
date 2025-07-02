@@ -1,4 +1,4 @@
-package ch.admin.bar.siard2.jdbc;
+package ch.admin.bar.siard2.jdbc.legacy;
 
 import java.sql.*;
 import java.text.*;
@@ -7,13 +7,16 @@ import java.util.regex.*;
 
 import static org.junit.Assert.*;
 
+import ch.admin.bar.siard2.jdbc.OracleConnection;
+import ch.admin.bar.siard2.jdbc.OracleDatabaseMetaData;
+import ch.admin.bar.siard2.oracle.legacy.TestOracleDatabase;
+import ch.admin.bar.siard2.oracle.legacy.TestSqlDatabase;
 import org.junit.*;
 import ch.enterag.utils.*;
 import ch.enterag.utils.base.*;
 import ch.enterag.utils.jdbc.*;
 import ch.enterag.sqlparser.identifier.*;
 import ch.admin.bar.siard2.jdbcx.*;
-import ch.admin.bar.siard2.oracle.*;
 import org.testcontainers.containers.OracleContainer;
 
 public class OracleDatabaseMetaDataTester

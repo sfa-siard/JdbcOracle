@@ -1,4 +1,4 @@
-package ch.admin.bar.siard2.oracle;
+package ch.admin.bar.siard2.oracle.legacy;
 
 import java.io.*;
 import java.math.*;
