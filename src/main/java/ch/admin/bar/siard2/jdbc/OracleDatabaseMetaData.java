@@ -26,7 +26,7 @@ public class OracleDatabaseMetaData
 	implements DatabaseMetaData
 {
   /** logger */
-  private static IndentLogger _il = IndentLogger.getIndentLogger(OracleDatabaseMetaData.class.getName());
+  private static IndentLogger indentLogger = IndentLogger.getIndentLogger(OracleDatabaseMetaData.class.getName());
   private static final String sTABLE = "TABLE";
   private static final String sVIEW = "VIEW";
   private static final String sSYNONYM = "SYNONYM";
@@ -329,7 +329,7 @@ public class OracleDatabaseMetaData
 	  String columnNamePattern)
     throws SQLException
   {
-    _il.enter(catalog,schemaPattern,tableNamePattern,columnNamePattern);
+    indentLogger.enter(catalog, schemaPattern, tableNamePattern, columnNamePattern);
     StringBuilder sbCondition = new StringBuilder("C.COLUMN_NAME LIKE ");
     sbCondition.append(SqlLiterals.formatStringLiteral(columnNamePattern));
     sbCondition.append(" ESCAPE ");
@@ -393,10 +393,10 @@ public class OracleDatabaseMetaData
       "ORDER BY TABLE_CAT, TABLE_SCHEM, TABLE_NAME, ORDINAL_POSITION";
     ResultSet rsColumns = null;
     Connection conn = getConnection();
-    _il.event("Unwrapped prepared query: "+sSql);
+    indentLogger.event("Unwrapped prepared query: "+sSql);
     PreparedStatement pstmt = conn.unwrap(Connection.class).prepareStatement(sSql,ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY);
     rsColumns = new OracleMetaColumns(pstmt.executeQuery(),conn,pstmt,1,2,5,6,7,7,9);
-    _il.exit(rsColumns);
+    indentLogger.exit(rsColumns);
     return rsColumns;
   } /* getColumns */
   
@@ -406,7 +406,7 @@ public class OracleDatabaseMetaData
 	public ResultSet getUDTs(String catalog, String schemaPattern, String typeNamePattern, int[] types)
 		throws SQLException
 	{
-	  _il.enter(catalog,schemaPattern,typeNamePattern,types);
+	  indentLogger.enter(catalog, schemaPattern, typeNamePattern, types);
 	  ResultSet rsUdts = null;
 	  boolean bEmpty = true;
 	  if (types != null)
@@ -451,9 +451,9 @@ public class OracleDatabaseMetaData
  		  "ORDER BY DATA_TYPE, TYPE_CAT, TYPE_SCHEM, TYPE_NAME";
 	
 	  Statement stmt = getConnection().createStatement();
-	  _il.event("Unwrapped query: "+sSql);
+	  indentLogger.event("Unwrapped query: "+sSql);
 	  rsUdts = stmt.unwrap(Statement.class).executeQuery(sSql);
-	  _il.exit(rsUdts);
+	  indentLogger.exit(rsUdts);
 	  return rsUdts;
 	} /* getUDTs */
 
@@ -463,7 +463,7 @@ public class OracleDatabaseMetaData
 	public ResultSet getAttributes(String catalog, String schemaPattern, String typeNamePattern, String attributeNamePattern)
 		throws SQLException
 	{
-	  _il.enter(catalog,schemaPattern,typeNamePattern,attributeNamePattern);
+	  indentLogger.enter(catalog, schemaPattern, typeNamePattern, attributeNamePattern);
 	  ResultSet rsAttributes = null;
     StringBuilder sbCondition = new StringBuilder();
     sbCondition.append("A.TYPE_NAME LIKE ");
@@ -510,9 +510,9 @@ public class OracleDatabaseMetaData
       "ORDER BY TYPE_CAT, TYPE_SCHEM, TYPE_NAME, ORDINAL_POSITION";
 		
 	  Statement stmt = getConnection().createStatement();
-	  _il.event("Unwrapped query: "+sSql);
+	  indentLogger.event("Unwrapped query: "+sSql);
 	  rsAttributes = stmt.unwrap(Statement.class).executeQuery(sSql);
-	  _il.exit(rsAttributes);
+	  indentLogger.exit(rsAttributes);
 	  return new OracleMetaColumns(rsAttributes,getConnection(),stmt, 1,2,5,6,7,7,8);
 	} /* getAttributes */
 
@@ -534,7 +534,7 @@ public class OracleDatabaseMetaData
 	public ResultSet getSuperTypes(String catalog, String schemaPattern, String typeNamePattern) 
 		throws SQLException
 	{
-	  _il.enter(catalog,schemaPattern,typeNamePattern);
+	  indentLogger.enter(catalog, schemaPattern, typeNamePattern);
 	  ResultSet rsSuperTypes = null;
     StringBuilder sbCondition = new StringBuilder("SUPERTYPE_NAME IS NOT NULL\r\n");
     sbCondition.append(" AND TYPE_NAME LIKE ");
@@ -563,9 +563,9 @@ public class OracleDatabaseMetaData
  		  "ORDER BY TYPE_CAT, TYPE_SCHEM, TYPE_NAME, SUPERTYPE_CAT, SUPERTYPE_SCHEM, SUPERTYPE_NAME";
 		
 		Statement stmt = getConnection().createStatement();
-		_il.event("Unwrapped query: "+sSql);
+		indentLogger.event("Unwrapped query: "+sSql);
 		rsSuperTypes = stmt.unwrap(Statement.class).executeQuery(sSql);
-		_il.exit(rsSuperTypes);
+		indentLogger.exit(rsSuperTypes);
 		return rsSuperTypes;
 	} /* getSuperTypes */	
 
@@ -580,7 +580,7 @@ public class OracleDatabaseMetaData
 	public ResultSet getIndexInfo(String catalog, String schema, String table, boolean unique, boolean approximate)
 		throws SQLException
 	{
-	  _il.enter(catalog,schema,table,String.valueOf(unique),String.valueOf(approximate));
+	  indentLogger.enter(catalog, schema, table, String.valueOf(unique), String.valueOf(approximate));
     ResultSet rsIndexInfo = null;
 	  StringBuilder sbCondition = new StringBuilder("I.TABLE_NAME = ");
 	  sbCondition.append(SqlLiterals.formatStringLiteral(table));
@@ -629,9 +629,9 @@ public class OracleDatabaseMetaData
     sbSql.append("ORDER BY NON_UNIQUE, INDEX_NAME, ORDINAL_POSITION");
 
     Statement stmt = getConnection().createStatement();
-    _il.event("Unwrapped query: "+sbSql.toString());
+    indentLogger.event("Unwrapped query: "+sbSql.toString());
     rsIndexInfo = stmt.unwrap(Statement.class).executeQuery(sbSql.toString());
-    _il.exit(rsIndexInfo);
+    indentLogger.exit(rsIndexInfo);
     return rsIndexInfo;
 	} /* getIndexInfo */
 	
@@ -642,7 +642,7 @@ public class OracleDatabaseMetaData
     String schemaPattern, String procedureNamePattern,
     String columnNamePattern) throws SQLException
   {
-    _il.enter(catalog,schemaPattern,procedureNamePattern,columnNamePattern);
+    indentLogger.enter(catalog, schemaPattern, procedureNamePattern, columnNamePattern);
     StringBuilder sbCondition = new StringBuilder("A.DATA_LEVEL = 0\r\n");
     if ((schemaPattern != null) && (!schemaPattern.equals("%")))
     {
@@ -736,9 +736,9 @@ public class OracleDatabaseMetaData
     
     ResultSet rsProcedureColumns = null;
     Statement stmt = getConnection().createStatement();
-    _il.event("Unwrapped query: "+sbSql.toString());
+    indentLogger.event("Unwrapped query: "+sbSql.toString());
     rsProcedureColumns = stmt.unwrap(Statement.class).executeQuery(sbSql.toString());
-    _il.exit(rsProcedureColumns);
+    indentLogger.exit(rsProcedureColumns);
     return new OracleMetaColumns(rsProcedureColumns,getConnection(),stmt,1,2,6,7,8,9,10);
   } /* getProcedureColumns */
 
@@ -749,7 +749,7 @@ public class OracleDatabaseMetaData
     String schemaPattern, String procedureNamePattern)
     throws SQLException
   {
-    _il.enter(catalog,schemaPattern,procedureNamePattern);
+    indentLogger.enter(catalog, schemaPattern, procedureNamePattern);
     StringBuilder sbCondition = new StringBuilder();
     if ((procedureNamePattern == null) || procedureNamePattern.equals("%"))
     {
@@ -809,197 +809,193 @@ public class OracleDatabaseMetaData
     
     ResultSet rsProcedures = null;
     Statement stmt = getConnection().createStatement();
-    _il.event("Unwrapped query: "+sbSql.toString());
+    indentLogger.event("Unwrapped query: "+sbSql.toString());
     rsProcedures = stmt.unwrap(Statement.class).executeQuery(sbSql.toString());
-    _il.exit(rsProcedures);
+    indentLogger.exit(rsProcedures);
     return rsProcedures;
   } /* getProcedures */
 
-  /*------------------------------------------------------------------*/
-  /** {@inheritDoc}
-   * This returns a LONG for the view query. Make sure no other JDBC method
-   * is called between this and the next() statement!
-   */
+
   @Override
   public ResultSet getTables(String catalog, String schemaPattern,
-    String tableNamePattern, String[] types) throws SQLException
-  {
-    _il.enter(catalog,schemaPattern,tableNamePattern,types);
-    StringBuilder sbCondition = new StringBuilder("O.OBJECT_NAME LIKE ");
-    sbCondition.append(SqlLiterals.formatStringLiteral(tableNamePattern));
-    sbCondition.append(" ESCAPE ");
-    sbCondition.append(SqlLiterals.formatStringLiteral(getSearchStringEscape()));
-    sbCondition.append("\r\n");
-    if (schemaPattern != null)
-    {
-      sbCondition.append("AND O.OWNER LIKE ");
-      sbCondition.append(SqlLiterals.formatStringLiteral(schemaPattern));
-      sbCondition.append(" ESCAPE ");
-      sbCondition.append(SqlLiterals.formatStringLiteral(getSearchStringEscape()));
-      sbCondition.append("\r\n");
-    }
-    if (types != null)
-    {
-      boolean bSystem = false;
-      boolean bTemporary = false;
-      Set<String> setObjectTypes = new HashSet<String>();
-      for (int iType = 0; iType < types.length; iType++)
-      {
-        String sType = types[iType];
-        if (sType.equals(sTABLE))
-          setObjectTypes.add(sTABLE);
-        else if (sType.equals(sVIEW))
-          setObjectTypes.add(sVIEW);
-        else if (sType.equals(sSYNONYM))
-          setObjectTypes.add(sSYNONYM);
-        else if (sType.equals(sGLOBAL_TEMPORARY))
-        {
-          setObjectTypes.add(sTABLE);
-          bTemporary = true;
-        }
-        else if (sType.equals(sSYSTEM_TABLE))
-        {
-          setObjectTypes.add(sTABLE);
-          bSystem = true;
-        }
-      }
-      if (setObjectTypes.size() > 0)
-      {
-        sbCondition.append(" AND (\r\n");
-        boolean bFirst = true;
-        for (Iterator<String> iterObjectType = setObjectTypes.iterator(); iterObjectType.hasNext(); )
-        {
-          if (bFirst)
-            bFirst = false;
-          else
-            sbCondition.append(" OR ");
-          String sObjectType = iterObjectType.next();
-          sbCondition.append("(O.OBJECT_TYPE = ");
-          sbCondition.append(SqlLiterals.formatStringLiteral(sObjectType));
-          if (sObjectType.equals("TABLE"))
-            sbCondition.append(" AND NOT T.TABLE_NAME IS NULL");
-          else if (sObjectType.equals("VIEW"))
-            sbCondition.append(" AND NOT V.VIEW_NAME IS NULL");
-          sbCondition.append(")\r\n");
-        }
-        sbCondition.append(")\r\n");
-      }
-      sbCondition.append(" AND \r\n");
-      sbCondition.append(getOracleMaintainedCondition(bSystem));
-      sbCondition.append("\r\n");
-      if (!bSystem)
-      {
-        sbCondition.append("AND O.GENERATED = ");
-        sbCondition.append(SqlLiterals.formatStringLiteral("N"));
-        sbCondition.append("\r\n");
-      }
-      String sTemporary = "N";
-      if (bTemporary)
-        sTemporary = "Y";
-      sbCondition.append("AND O.TEMPORARY = ");
-      sbCondition.append(SqlLiterals.formatStringLiteral(sTemporary));
-      sbCondition.append("\r\n");
-    }
-    
-    StringBuilder sbTableTypeCase = new StringBuilder("CASE\r\n");
-    sbTableTypeCase.append("  WHEN O.OBJECT_TYPE = ");
-    sbTableTypeCase.append(SqlLiterals.formatStringLiteral(sTABLE));
-    sbTableTypeCase.append(" AND O.TEMPORARY = ");
-    sbTableTypeCase.append(SqlLiterals.formatStringLiteral("N"));
-    sbTableTypeCase.append(" AND ");
-    sbTableTypeCase.append(getOracleMaintainedCondition(false));
-    sbTableTypeCase.append(" THEN ");
-    sbTableTypeCase.append(SqlLiterals.formatStringLiteral(sTABLE));
-    sbTableTypeCase.append("\r\n");
-    sbTableTypeCase.append("  WHEN O.OBJECT_TYPE = ");
-    sbTableTypeCase.append(SqlLiterals.formatStringLiteral(sTABLE));
-    sbTableTypeCase.append(" AND O.TEMPORARY = ");
-    sbTableTypeCase.append(SqlLiterals.formatStringLiteral("Y"));
-    sbTableTypeCase.append(" AND ");
-    sbTableTypeCase.append(getOracleMaintainedCondition(false));
-    sbTableTypeCase.append(" THEN ");
-    sbTableTypeCase.append(SqlLiterals.formatStringLiteral(sGLOBAL_TEMPORARY));
-    sbTableTypeCase.append("\r\n");
-    sbTableTypeCase.append("  WHEN O.OBJECT_TYPE = ");
-    sbTableTypeCase.append(SqlLiterals.formatStringLiteral(sTABLE));
-    sbTableTypeCase.append(" AND O.TEMPORARY = ");
-    sbTableTypeCase.append(SqlLiterals.formatStringLiteral("N"));
-    sbTableTypeCase.append(" AND ");
-    sbTableTypeCase.append(getOracleMaintainedCondition(true));
-    sbTableTypeCase.append(" THEN ");
-    sbTableTypeCase.append(SqlLiterals.formatStringLiteral(sSYSTEM_TABLE));
-    sbTableTypeCase.append("\r\n");
-    sbTableTypeCase.append("  WHEN O.OBJECT_TYPE = ");
-    sbTableTypeCase.append(SqlLiterals.formatStringLiteral(sVIEW));
-    sbTableTypeCase.append(" AND O.TEMPORARY = ");
-    sbTableTypeCase.append(SqlLiterals.formatStringLiteral("N"));
-    sbTableTypeCase.append(" AND ");
-    sbTableTypeCase.append(getOracleMaintainedCondition(false));
-    sbTableTypeCase.append(" THEN ");
-    sbTableTypeCase.append(SqlLiterals.formatStringLiteral(sVIEW));
-    sbTableTypeCase.append("\r\n");
-    sbTableTypeCase.append("  WHEN O.OBJECT_TYPE = ");
-    sbTableTypeCase.append(SqlLiterals.formatStringLiteral(sSYNONYM));
-    sbTableTypeCase.append(" AND O.TEMPORARY = ");
-    sbTableTypeCase.append(SqlLiterals.formatStringLiteral("N"));
-    sbTableTypeCase.append(" AND ");
-    sbTableTypeCase.append(getOracleMaintainedCondition(false));
-    sbTableTypeCase.append(" THEN ");
-    sbTableTypeCase.append(SqlLiterals.formatStringLiteral(sSYNONYM));
-    sbTableTypeCase.append("\r\n");
-    sbTableTypeCase.append("ELSE NULL END");
-    
-    StringBuilder sbSql = new StringBuilder("SELECT\r\n");
-    sbSql.append("  NULL AS TABLE_CAT,\r\n");
-    sbSql.append("  O.OWNER AS TABLE_SCHEM,\r\n");
-    sbSql.append("  O.OBJECT_NAME AS TABLE_NAME,\r\n");
-    sbSql.append(sbTableTypeCase.toString());
-    sbSql.append(" AS TABLE_TYPE,\r\n");
-    sbSql.append("  TC.COMMENTS AS REMARKS,\r\n");
-    sbSql.append("  NULL AS TYPE_CAT,\r\n");
-    sbSql.append("  NULL AS TYPE_SCHEM,\r\n");
-    sbSql.append("  NULL AS TYPE_NAME,\r\n");
-    sbSql.append("  NULL AS SELF_REFERENCING_COL_NAME,\r\n");
-    sbSql.append("  NULL AS REF_GENERATION,\r\n");
-    sbSql.append("  V.TEXT AS ");
-    sbSql.append(_sQUERY_TEXT);
-    sbSql.append("\r\n");
-    sbSql.append("FROM ALL_OBJECTS O\r\n");
-    sbSql.append("  INNER JOIN "+sTABLE_ALL_USERS+" "+sALIAS_ALL_USERS+"\r\n");
-    sbSql.append("  ON (O.OWNER = "+sALIAS_ALL_USERS+"."+sCOLUMN_USERNAME+")\r\n");
-    sbSql.append("  LEFT JOIN ALL_TABLES T\r\n");
-    sbSql.append("  ON (O.OWNER = T.OWNER AND \r\n");
-    sbSql.append("      O.OBJECT_NAME = T.TABLE_NAME AND\r\n");
-    sbSql.append("      O.OBJECT_TYPE = 'TABLE' AND\r\n");
-    sbSql.append("      T.NESTED = 'NO')\r\n");
-    sbSql.append("  LEFT JOIN ALL_VIEWS V\r\n");
-    sbSql.append("  ON (O.OWNER = V.OWNER AND\r\n");
-    sbSql.append("      O.OBJECT_NAME = V.VIEW_NAME AND\r\n");
-    sbSql.append("      O.OBJECT_TYPE = 'VIEW')\r\n");
-    sbSql.append("  LEFT JOIN ALL_TAB_COMMENTS TC\r\n");
-    sbSql.append("  ON (O.OWNER = TC.OWNER AND\r\n");
-    sbSql.append("      O.OBJECT_NAME = TC.TABLE_NAME AND\r\n");
-    sbSql.append("      O.OBJECT_TYPE = TC.TABLE_TYPE)\r\n");
-    sbSql.append("WHERE\r\n");
-    sbSql.append(sbCondition.toString());
-    sbSql.append("ORDER BY TABLE_TYPE, TABLE_CAT, TABLE_SCHEM, TABLE_NAME");
-    ResultSet rsTables = null;
-    Connection conn = getConnection();
-    _il.event("Unwrapped prepared query: "+sbSql.toString());
-    PreparedStatement pstmt = conn.unwrap(Connection.class).prepareStatement(sbSql.toString(),ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY);
-    rsTables = pstmt.executeQuery();
-    rsTables = new OracleResultSet(rsTables,conn,pstmt);
-    _il.exit(rsTables);
-    return rsTables;
-  } /* getTables */
+                             String tableNamePattern, String[] types) throws SQLException {
+      indentLogger.enter(catalog, schemaPattern, tableNamePattern, types);
+      StringBuilder sbSql = createGetTablesQuery(schemaPattern, tableNamePattern, types);
+      indentLogger.event("Unwrapped prepared query: " + sbSql.toString());
+      ResultSet rsTables = getResultSet(sbSql);
+      indentLogger.exit(rsTables);
+      return rsTables;
+  }
 
-  /*------------------------------------------------------------------*/
+    private ResultSet getResultSet(StringBuilder sbSql) throws SQLException {
+        ResultSet rsTables;
+        Connection conn = getConnection();
+        PreparedStatement pstmt = conn.unwrap(Connection.class)
+                                      .prepareStatement(sbSql.toString(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+        rsTables = pstmt.executeQuery();
+        return new OracleResultSet(rsTables, conn, pstmt);
+    }
+
+    private StringBuilder createGetTablesQuery(String schemaPattern, String tableNamePattern, String[] types) throws SQLException {
+        StringBuilder sbCondition = new StringBuilder("O.OBJECT_NAME LIKE ");
+        sbCondition.append(SqlLiterals.formatStringLiteral(tableNamePattern));
+        sbCondition.append(" ESCAPE ");
+        sbCondition.append(SqlLiterals.formatStringLiteral(getSearchStringEscape()));
+        sbCondition.append("\r\n");
+        if (schemaPattern != null) {
+            sbCondition.append("AND O.OWNER LIKE ");
+            sbCondition.append(SqlLiterals.formatStringLiteral(schemaPattern));
+            sbCondition.append(" ESCAPE ");
+            sbCondition.append(SqlLiterals.formatStringLiteral(getSearchStringEscape()));
+            sbCondition.append("\r\n");
+        }
+        if (types != null) {
+            boolean bSystem = false;
+            boolean bTemporary = false;
+            Set<String> setObjectTypes = new HashSet<String>();
+            for (int iType = 0; iType < types.length; iType++) {
+                String sType = types[iType];
+                if (sType.equals(sTABLE))
+                    setObjectTypes.add(sTABLE);
+                else if (sType.equals(sVIEW))
+                    setObjectTypes.add(sVIEW);
+                else if (sType.equals(sSYNONYM))
+                    setObjectTypes.add(sSYNONYM);
+                else if (sType.equals(sGLOBAL_TEMPORARY)) {
+                    setObjectTypes.add(sTABLE);
+                    bTemporary = true;
+                } else if (sType.equals(sSYSTEM_TABLE)) {
+                    setObjectTypes.add(sTABLE);
+                    bSystem = true;
+                }
+            }
+            if (setObjectTypes.size() > 0) {
+                sbCondition.append(" AND (\r\n");
+                boolean bFirst = true;
+                for (Iterator<String> iterObjectType = setObjectTypes.iterator(); iterObjectType.hasNext(); ) {
+                    if (bFirst)
+                        bFirst = false;
+                    else
+                        sbCondition.append(" OR ");
+                    String sObjectType = iterObjectType.next();
+                    sbCondition.append("(O.OBJECT_TYPE = ");
+                    sbCondition.append(SqlLiterals.formatStringLiteral(sObjectType));
+                    if (sObjectType.equals("TABLE"))
+                        sbCondition.append(" AND NOT T.TABLE_NAME IS NULL");
+                    else if (sObjectType.equals("VIEW"))
+                        sbCondition.append(" AND NOT V.VIEW_NAME IS NULL");
+                    sbCondition.append(")\r\n");
+                }
+                sbCondition.append(")\r\n");
+            }
+            sbCondition.append(" AND \r\n");
+            sbCondition.append(getOracleMaintainedCondition(bSystem));
+            sbCondition.append("\r\n");
+            if (!bSystem) {
+                sbCondition.append("AND O.GENERATED = ");
+                sbCondition.append(SqlLiterals.formatStringLiteral("N"));
+                sbCondition.append("\r\n");
+            }
+            String sTemporary = "N";
+            if (bTemporary)
+                sTemporary = "Y";
+            sbCondition.append("AND O.TEMPORARY = ");
+            sbCondition.append(SqlLiterals.formatStringLiteral(sTemporary));
+            sbCondition.append("\r\n");
+        }
+
+        StringBuilder sbTableTypeCase = new StringBuilder("CASE\r\n");
+        sbTableTypeCase.append("  WHEN O.OBJECT_TYPE = ");
+        sbTableTypeCase.append(SqlLiterals.formatStringLiteral(sTABLE));
+        sbTableTypeCase.append(" AND O.TEMPORARY = ");
+        sbTableTypeCase.append(SqlLiterals.formatStringLiteral("N"));
+        sbTableTypeCase.append(" AND ");
+        sbTableTypeCase.append(getOracleMaintainedCondition(false));
+        sbTableTypeCase.append(" THEN ");
+        sbTableTypeCase.append(SqlLiterals.formatStringLiteral(sTABLE));
+        sbTableTypeCase.append("\r\n");
+        sbTableTypeCase.append("  WHEN O.OBJECT_TYPE = ");
+        sbTableTypeCase.append(SqlLiterals.formatStringLiteral(sTABLE));
+        sbTableTypeCase.append(" AND O.TEMPORARY = ");
+        sbTableTypeCase.append(SqlLiterals.formatStringLiteral("Y"));
+        sbTableTypeCase.append(" AND ");
+        sbTableTypeCase.append(getOracleMaintainedCondition(false));
+        sbTableTypeCase.append(" THEN ");
+        sbTableTypeCase.append(SqlLiterals.formatStringLiteral(sGLOBAL_TEMPORARY));
+        sbTableTypeCase.append("\r\n");
+        sbTableTypeCase.append("  WHEN O.OBJECT_TYPE = ");
+        sbTableTypeCase.append(SqlLiterals.formatStringLiteral(sTABLE));
+        sbTableTypeCase.append(" AND O.TEMPORARY = ");
+        sbTableTypeCase.append(SqlLiterals.formatStringLiteral("N"));
+        sbTableTypeCase.append(" AND ");
+        sbTableTypeCase.append(getOracleMaintainedCondition(true));
+        sbTableTypeCase.append(" THEN ");
+        sbTableTypeCase.append(SqlLiterals.formatStringLiteral(sSYSTEM_TABLE));
+        sbTableTypeCase.append("\r\n");
+        sbTableTypeCase.append("  WHEN O.OBJECT_TYPE = ");
+        sbTableTypeCase.append(SqlLiterals.formatStringLiteral(sVIEW));
+        sbTableTypeCase.append(" AND O.TEMPORARY = ");
+        sbTableTypeCase.append(SqlLiterals.formatStringLiteral("N"));
+        sbTableTypeCase.append(" AND ");
+        sbTableTypeCase.append(getOracleMaintainedCondition(false));
+        sbTableTypeCase.append(" THEN ");
+        sbTableTypeCase.append(SqlLiterals.formatStringLiteral(sVIEW));
+        sbTableTypeCase.append("\r\n");
+        sbTableTypeCase.append("  WHEN O.OBJECT_TYPE = ");
+        sbTableTypeCase.append(SqlLiterals.formatStringLiteral(sSYNONYM));
+        sbTableTypeCase.append(" AND O.TEMPORARY = ");
+        sbTableTypeCase.append(SqlLiterals.formatStringLiteral("N"));
+        sbTableTypeCase.append(" AND ");
+        sbTableTypeCase.append(getOracleMaintainedCondition(false));
+        sbTableTypeCase.append(" THEN ");
+        sbTableTypeCase.append(SqlLiterals.formatStringLiteral(sSYNONYM));
+        sbTableTypeCase.append("\r\n");
+        sbTableTypeCase.append("ELSE NULL END");
+
+        StringBuilder sbSql = new StringBuilder("SELECT\r\n");
+        sbSql.append("  NULL AS TABLE_CAT,\r\n");
+        sbSql.append("  O.OWNER AS TABLE_SCHEM,\r\n");
+        sbSql.append("  O.OBJECT_NAME AS TABLE_NAME,\r\n");
+        sbSql.append(sbTableTypeCase.toString());
+        sbSql.append(" AS TABLE_TYPE,\r\n");
+        sbSql.append("  TC.COMMENTS AS REMARKS,\r\n");
+        sbSql.append("  NULL AS TYPE_CAT,\r\n");
+        sbSql.append("  NULL AS TYPE_SCHEM,\r\n");
+        sbSql.append("  NULL AS TYPE_NAME,\r\n");
+        sbSql.append("  NULL AS SELF_REFERENCING_COL_NAME,\r\n");
+        sbSql.append("  NULL AS REF_GENERATION,\r\n");
+        sbSql.append("  V.TEXT AS ");
+        sbSql.append(_sQUERY_TEXT);
+        sbSql.append("\r\n");
+        sbSql.append("FROM ALL_OBJECTS O\r\n");
+        sbSql.append("  INNER JOIN " + sTABLE_ALL_USERS + " " + sALIAS_ALL_USERS + "\r\n");
+        sbSql.append("  ON (O.OWNER = " + sALIAS_ALL_USERS + "." + sCOLUMN_USERNAME + ")\r\n");
+        sbSql.append("  LEFT JOIN ALL_TABLES T\r\n");
+        sbSql.append("  ON (O.OWNER = T.OWNER AND \r\n");
+        sbSql.append("      O.OBJECT_NAME = T.TABLE_NAME AND\r\n");
+        sbSql.append("      O.OBJECT_TYPE = 'TABLE' AND\r\n");
+        sbSql.append("      T.NESTED = 'NO')\r\n");
+        sbSql.append("  LEFT JOIN ALL_VIEWS V\r\n");
+        sbSql.append("  ON (O.OWNER = V.OWNER AND\r\n");
+        sbSql.append("      O.OBJECT_NAME = V.VIEW_NAME AND\r\n");
+        sbSql.append("      O.OBJECT_TYPE = 'VIEW')\r\n");
+        sbSql.append("  LEFT JOIN ALL_TAB_COMMENTS TC\r\n");
+        sbSql.append("  ON (O.OWNER = TC.OWNER AND\r\n");
+        sbSql.append("      O.OBJECT_NAME = TC.TABLE_NAME AND\r\n");
+        sbSql.append("      O.OBJECT_TYPE = TC.TABLE_TYPE)\r\n");
+        sbSql.append("WHERE\r\n");
+        sbSql.append(sbCondition.toString());
+        sbSql.append("ORDER BY TABLE_TYPE, TABLE_CAT, TABLE_SCHEM, TABLE_NAME");
+        return sbSql;
+    }
+
+    /*------------------------------------------------------------------*/
   /** {@inheritDoc} */
   @Override
   public ResultSet getTableTypes()
     throws SQLException
   {
-    _il.enter();
+    indentLogger.enter();
     ResultSet rsTableTypes = null;
     StringBuilder sbSql = new StringBuilder("SELECT TABLE_TYPE FROM(\r\n");
     for (int iTableType = 0; iTableType < asTABLE_TYPES.length; iTableType++)
@@ -1012,9 +1008,9 @@ public class OracleDatabaseMetaData
     }
     sbSql.append(")");
     Statement stmt = getConnection().createStatement();
-    _il.event("Unwrapped query: "+sbSql.toString());
+    indentLogger.event("Unwrapped query: "+sbSql.toString());
     rsTableTypes = stmt.unwrap(Statement.class).executeQuery(sbSql.toString());
-    _il.exit(rsTableTypes);
+    indentLogger.exit(rsTableTypes);
     return rsTableTypes;
   } /* getTableTypes */
   
@@ -1024,7 +1020,7 @@ public class OracleDatabaseMetaData
   public ResultSet getSchemas()
     throws SQLException
   {
-    _il.enter();
+    indentLogger.enter();
     ResultSet rsSchemas = null;
     StringBuilder sbSql = new StringBuilder("SELECT\r\n");
     sbSql.append(sALIAS_ALL_USERS+"."+sCOLUMN_USERNAME+" AS TABLE_SCHEM,\r\n");
@@ -1033,9 +1029,9 @@ public class OracleDatabaseMetaData
     sbSql.append("WHERE ");
     sbSql.append(getOracleMaintainedCondition(false));
     Statement stmt = getConnection().createStatement();
-    _il.event("Unwrapped query: "+sbSql.toString());
+    indentLogger.event("Unwrapped query: "+sbSql.toString());
     rsSchemas = stmt.unwrap(Statement.class).executeQuery(sbSql.toString());
-    _il.exit(rsSchemas);
+    indentLogger.exit(rsSchemas);
     return rsSchemas;
   } /* getSchemas */
   
@@ -1045,7 +1041,7 @@ public class OracleDatabaseMetaData
   public ResultSet getSchemas(String catalog, String schemaPattern)
     throws SQLException
   {
-    _il.enter(catalog,schemaPattern);
+    indentLogger.enter(catalog, schemaPattern);
     ResultSet rsSchemas = null;
     StringBuilder sbCondition = new StringBuilder();
     if (schemaPattern != null)
@@ -1066,9 +1062,9 @@ public class OracleDatabaseMetaData
       sbSql.append(sbCondition.toString());
     }
     Statement stmt = getConnection().createStatement();
-    _il.event("Unwrapped query: "+sbSql.toString());
+    indentLogger.event("Unwrapped query: "+sbSql.toString());
     rsSchemas = stmt.unwrap(Statement.class).executeQuery(sbSql.toString());
-    _il.exit(rsSchemas);
+    indentLogger.exit(rsSchemas);
     return rsSchemas;
   } /* getSchemas */
   
