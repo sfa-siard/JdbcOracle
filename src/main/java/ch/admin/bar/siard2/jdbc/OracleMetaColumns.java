@@ -36,7 +36,7 @@ public class OracleMetaColumns
     Pattern.compile("^TYPE.*VARRAY\\s*\\((\\d+)\\)\\s+OF\\s+(.*?)\\s*;?\\s*$",
     Pattern.CASE_INSENSITIVE+Pattern.DOTALL);
   private static Pattern _patTableText = 
-    Pattern.compile("^TYPE.*TABLE\\s+OF\\s+(.*?)\\s*;?\\s*$",
+    Pattern.compile("^TYPE.*TABLE\\s+OF\\s+\\(([^)]+)\\).*$",
     Pattern.CASE_INSENSITIVE+Pattern.DOTALL);
   private static Pattern _patType = Pattern.compile("^(.*?)(\\(\\s*(\\d+)\\s*(,\\s*(\\d)+\\s*)?\\))?$");
   private static final int _iDEFAULT_TABLE_MAXIMUM = Integer.MAX_VALUE;
@@ -287,27 +287,22 @@ public class OracleMetaColumns
   
   /*------------------------------------------------------------------*/
   static String getTypeName(String sTypeName, int iDataType, int iColumnSize, int iDecimals,
-    Connection conn, String sCatalogName, String sSchemaName)
-    throws SQLException
-  {
+                            Connection conn, String sCatalogName, String sSchemaName)
+          throws SQLException {
     _il.enter(sTypeName);
-    if (sTypeName != null)
-    {
+    if (sTypeName != null) {
       QualifiedId qiTypeName = parseTypeName(sTypeName);
-      PredefinedType preType = getPredefinedType(qiTypeName.getName(),iColumnSize,iDecimals);
+      PredefinedType preType = getPredefinedType(qiTypeName.getName(), iColumnSize, iDecimals);
       if (preType.getType() != null)
         sTypeName = preType.format();
-      else
-      {
+      else {
         sTypeName = qiTypeName.getName();
         String sTypeSchema = qiTypeName.getSchema();
-        /* search for the type name in some system schema if no schema was given */ 
-        if ((sTypeSchema == null) || "PUBLIC".equals(sTypeSchema))
-        {
-          OracleDatabaseMetaData dmd = (OracleDatabaseMetaData)conn.getMetaData(); 
+        /* search for the type name in some system schema if no schema was given */
+        if ((sTypeSchema == null) || "PUBLIC".equals(sTypeSchema)) {
+          OracleDatabaseMetaData dmd = (OracleDatabaseMetaData) conn.getMetaData();
           ResultSet rs = dmd.getUDTs(sCatalogName, null, dmd.toPattern(sTypeName), null);
-          while((!sSchemaName.equals(sTypeSchema)) && rs.next())
-          {
+          while ((!sSchemaName.equals(sTypeSchema)) && rs.next()) {
             if (sTypeName.equals(rs.getString("TYPE_NAME")))
               sTypeSchema = rs.getString("TYPE_SCHEM");
           }
@@ -319,10 +314,9 @@ public class OracleMetaColumns
         /* check, if it is a VARRAY type */
         if (iDataType != Types.ARRAY)
           sTypeName = qiTypeName.format();
-        else
-        {
-          oracle.jdbc.OracleConnection oconn = (oracle.jdbc.OracleConnection)conn.unwrap(Connection.class);
-          sTypeName = getFullArrayTypeName(oconn,qiTypeName);
+        else {
+          oracle.jdbc.OracleConnection oconn = (oracle.jdbc.OracleConnection) conn.unwrap(Connection.class);
+          sTypeName = getFullArrayTypeName(oconn, qiTypeName);
         }
       }
     }
