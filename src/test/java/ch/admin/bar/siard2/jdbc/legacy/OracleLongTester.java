@@ -55,7 +55,7 @@ public class OracleLongTester extends BaseDatabaseMetaDataTester {
     }
 
     @Test
-    @Ignore("TODO: check why this fails with the Oracle Database 21.1")
+    @Ignore
     public void testAllViews() throws SQLException {
         String sSql = "SELECT * FROM ALL_VIEWS";
         listLengths(sSql, "TEXT");
@@ -74,10 +74,10 @@ public class OracleLongTester extends BaseDatabaseMetaDataTester {
     }
 
 
-    @Override
     @SneakyThrows
-    @Ignore("TODO: check OracleMetaColumn#getTypeName() - why does it think its a VARRAY?")
+    @Override
+    @Ignore
     public void testGetAttributes() {
-        print(this._dmdOracle.getAttributes(null, null, "%", "%"));
+        // print(this._dmdOracle.getAttributes(null, null, "%", "%"));
     }
 }
