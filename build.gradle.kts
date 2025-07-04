@@ -1,9 +1,5 @@
-/*
- * Build file for JdbcOracle Gradle build.
- *
- * This file configures the build for the JdbcOracle project.
- */
-
+import java.text.DateFormat
+import java.util.Date
 
 plugins {
     `java-library`
@@ -16,6 +12,7 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
+group = "ch.admin.bar"
 version = scmVersion.version
 
 repositories {
@@ -27,6 +24,9 @@ repositories {
 
 dependencies {
     implementation("org.antlr:antlr4-runtime:4.5.2")
+
+    implementation("ch.admin.bar:enterutilities:v2.2.3")
+    implementation("ch.admin.bar:SqlParser:v2.2.2")
 
     implementation(fileTree("lib") { include("*.jar") })
 
@@ -45,4 +45,17 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+tasks.withType(Jar::class) {
+    manifest {
+        attributes["Manifest-Version"] = "1.0"
+        attributes["Created-By"] = "Hartwig Thomas, Enter AG, Rüti ZH, Switzerland; Puzzle ITC AG, Switzerland"
+        attributes["Specification-Title"] = "JdbcOracle"
+        attributes["Specification-Vendor"] = "Swiss Federal Archives, Berne, Switzerland"
+        attributes["Implementation-Title"] = "Oracle JDBC Wrapper"
+        attributes["Implementation-Version"] = archiveVersion
+        attributes["Implementation-Vendor"] = "Swiss Federal Archives, Berne, Switzerland"
+        attributes["Built-Date"] = DateFormat.getDateInstance().format(Date())
+    }
 }
