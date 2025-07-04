@@ -826,25 +826,15 @@ public class OracleDatabaseMetaData
     @Override
     public ResultSet getTables(String catalog, String schemaPattern,
                                String tableNamePattern, String[] types) throws SQLException {
-        indentLogger.enter(catalog, schemaPattern, tableNamePattern, types);
-        StringBuilder query = createGetTablesQuery(schemaPattern, tableNamePattern, types);
+
+        // quick fix for jdbc-oracle#6: restrict to the users schema
+        String userSchema = this.getConnection().getMetaData().getUserName();
+        indentLogger.enter(catalog, userSchema, tableNamePattern, types);
+        StringBuilder query = createGetTablesQuery(userSchema, tableNamePattern, types);
         indentLogger.event("Unwrapped prepared query: " + query);
         ResultSet rsTables = getResultSet(query);
         indentLogger.exit(rsTables);
         return rsTables;
-    }
-
-    public int countTables(String catalog, String schemaPattern,
-                           String tableNamePattern, String[] types) throws SQLException {
-        indentLogger.enter(catalog, schemaPattern, tableNamePattern, types);
-        StringBuilder query = createCountTablesQuery(schemaPattern, tableNamePattern, types);
-        indentLogger.event("Unwrapped prepared query: " + query);
-        ResultSet resultSet = getResultSet(query);
-        indentLogger.exit(resultSet);
-        if (resultSet.next()) {
-            return resultSet.getInt(1);
-        }
-        return 0;
     }
 
     private ResultSet getResultSet(StringBuilder queryBuilder) throws SQLException {
@@ -854,11 +844,6 @@ public class OracleDatabaseMetaData
                                       .prepareStatement(queryBuilder.toString(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
         rsTables = pstmt.executeQuery();
         return new OracleResultSet(rsTables, conn, pstmt);
-    }
-
-    private StringBuilder createCountTablesQuery(String schemaPattern, String tableNamePattern, String[] types) throws SQLException {
-        StringBuilder condition = getCondition(schemaPattern, tableNamePattern, types);
-        return getQuery(new StringBuilder("SELECT count(T.TABLE_NAME) "), condition);
     }
 
     private StringBuilder createGetTablesQuery(String schemaPattern, String tableNamePattern, String[] types) throws SQLException {
