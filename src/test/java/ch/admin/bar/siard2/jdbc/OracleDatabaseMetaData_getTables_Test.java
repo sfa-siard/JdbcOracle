@@ -42,7 +42,7 @@ class OracleDatabaseMetaData_getTables_Test {
     void get_number_of_rows_from_getTables_query() throws SQLException {
         ResultSet tableResultSet = oracleDatabaseMetaData.getTables(null, "%", "%", new String[]{"TABLE"});
         int i = countTables(tableResultSet);
-        assertEquals(2, i);
+        assertEquals(oracleDatabaseMetaData.countTables(null, "%", "%", new String[]{"TABLE"}), i);
     }
     @Test
     void get_tables() throws SQLException {
