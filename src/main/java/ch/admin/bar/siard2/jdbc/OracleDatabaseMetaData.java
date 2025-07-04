@@ -778,6 +778,9 @@ public class OracleDatabaseMetaData
             sbCondition.append(SqlLiterals.formatStringLiteral(getSearchStringEscape()));
             sbCondition.append("\r\n");
         }
+
+        sbCondition.append("AND P.OBJECT_TYPE in ('PROCEDURE', 'FUNCTION', 'TYPE'\r\n");
+
         StringBuilder sbCaseProcType = new StringBuilder("CASE P.OBJECT_TYPE\r\n");
         sbCaseProcType.append(" WHEN 'FUNCTION' THEN ");
         sbCaseProcType.append(String.valueOf(DatabaseMetaData.procedureReturnsResult));
