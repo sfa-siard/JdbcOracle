@@ -779,7 +779,7 @@ public class OracleDatabaseMetaData
             sbCondition.append("\r\n");
         }
 
-        sbCondition.append("AND P.OBJECT_TYPE in ('PROCEDURE', 'FUNCTION', 'TYPE'\r\n");
+        sbCondition.append("AND P.OBJECT_TYPE in ('PROCEDURE', 'FUNCTION', 'TYPE')\r\n");
 
         StringBuilder sbCaseProcType = new StringBuilder("CASE P.OBJECT_TYPE\r\n");
         sbCaseProcType.append(" WHEN 'FUNCTION' THEN ");
@@ -830,8 +830,8 @@ public class OracleDatabaseMetaData
     public ResultSet getTables(String catalog, String schemaPattern,
                                String tableNamePattern, String[] types) throws SQLException {
 
-        // quick fix for jdbc-oracle#6: restrict to the users schema
-        String userSchema = this.getConnection().getMetaData().getUserName();
+        // quick fix for jdbc-oracle#6: restrict to the users schema if schemaPattern is %
+        String userSchema = "%".equals(schemaPattern) ? this.getConnection().getMetaData().getUserName() : schemaPattern;
         indentLogger.enter(catalog, userSchema, tableNamePattern, types);
         StringBuilder query = createGetTablesQuery(userSchema, tableNamePattern, types);
         indentLogger.event("Unwrapped prepared query: " + query);
