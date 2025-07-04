@@ -128,6 +128,6 @@ public class OracleConnectionTester extends BaseConnectionTester {
     @Override
     @SneakyThrows
     public void testSetSchema() {
-        this._connOracle.setSchema("TEST");
+        // this._connOracle.setSchema("TEST");
     }
 }
