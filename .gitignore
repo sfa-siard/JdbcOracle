@@ -1,4 +1,5 @@
 # ignore all build directories
+/build/
 /build/**
 # ignore javadoc folder
 /doc/javadoc/**
@@ -8,7 +9,7 @@
 /dist/**
 # sometimes junit4 produces temporary files that we do not want to check in
 /junit*.*
-/build/
+
 
 target/
 
@@ -22,3 +23,6 @@ out/
 
 # folder where the script build-oracle-image.sh will clone the oracle/docker-images repo into
 docker-images
+
+# gradle
+.gradle/
