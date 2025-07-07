@@ -11,6 +11,7 @@ import ch.admin.bar.siard2.jdbc.OracleConnection;
 import ch.admin.bar.siard2.jdbc.OracleDatabaseMetaData;
 import ch.admin.bar.siard2.oracle.legacy.TestOracleDatabase;
 import ch.admin.bar.siard2.oracle.legacy.TestSqlDatabase;
+import lombok.SneakyThrows;
 import org.junit.*;
 import ch.enterag.utils.*;
 import ch.enterag.utils.base.*;
@@ -500,15 +501,11 @@ public class OracleDatabaseMetaDataTester
         }
     }
 
+    @SneakyThrows
     @Test
     @Override
     public void testGetProcedures() {
-        enter();
-        try {
-            print(_dmdOracle.getProcedures(null, "OE", "%"));
-        } catch (SQLException se) {
-            fail(EU.getExceptionMessage(se));
-        }
+        print(_dmdOracle.getProcedures(null, "OE", "%"));
     }
 
     @Test
