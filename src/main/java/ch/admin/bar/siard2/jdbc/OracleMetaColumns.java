@@ -197,7 +197,14 @@ public class OracleMetaColumns
     if (iType != Types.ARRAY)
     {
       QualifiedId qiTypeName = parseTypeName(sTypeName);
-      PredefinedType preType = getPredefinedType(qiTypeName.getName(),(int)lColumnSize,iDecimals);
+      String sBaseTypeName = qiTypeName.getName();
+      
+      if (sBaseTypeName != null && sBaseTypeName.contains("(")) {
+        int iParenIndex = sBaseTypeName.indexOf('(');
+        sBaseTypeName = sBaseTypeName.substring(0, iParenIndex);
+      }
+      
+      PredefinedType preType = getPredefinedType(sBaseTypeName,(int)lColumnSize,iDecimals);
       if (preType.getType() != null)
         iType = preType.getType().getSqlType();
       else if ("ANYDATA".equals(qiTypeName.getName()) && "SYS".equals(qiTypeName.getSchema()))

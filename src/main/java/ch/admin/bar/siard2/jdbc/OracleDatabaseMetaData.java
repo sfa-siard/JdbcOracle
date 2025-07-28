@@ -251,31 +251,81 @@ public class OracleDatabaseMetaData
   } /* getDataTypeCase */
   
   /*------------------------------------------------------------------*/
-  private String getTypeNameCase(String sDataType, String sTypeOwner, String sTypeName)
-  {
+  private String getTypeNameCase(String sDataType, String sTypeOwner, String sTypeName,
+                                 String sDataLength, String sDataPrecision, String sDataScale) {
     StringBuilder sbTypeNameCase = new StringBuilder("  CASE \r\n");
+
+    // Handle built-in Oracle types with precision/scale/length
     sbTypeNameCase.append("    WHEN ");
     sbTypeNameCase.append(sTypeOwner);
-    sbTypeNameCase.append(" IS NULL AND ");
-    sbTypeNameCase.append(sTypeName);
-    sbTypeNameCase.append(" IS NULL THEN ");
+    sbTypeNameCase.append(" IS NULL THEN \r\n");
+    sbTypeNameCase.append("      CASE \r\n");
+    
+    // NUMBER with precision and scale
+    sbTypeNameCase.append("        WHEN ");
     sbTypeNameCase.append(sDataType);
-    sbTypeNameCase.append("\r\n");
-    sbTypeNameCase.append("    WHEN ");
-    sbTypeNameCase.append(sTypeOwner);
-    sbTypeNameCase.append(" IS NULL AND NOT ");
-    sbTypeNameCase.append(sTypeName);
-    sbTypeNameCase.append(" IS NULL THEN '\"' || ");
-    sbTypeNameCase.append(sTypeName);
-    sbTypeNameCase.append(" || '\"'\r\n");
+    sbTypeNameCase.append(" = 'NUMBER' AND ");
+    sbTypeNameCase.append(sDataPrecision);
+    sbTypeNameCase.append(" IS NOT NULL AND ");
+    sbTypeNameCase.append(sDataScale);
+    sbTypeNameCase.append(" IS NOT NULL THEN 'NUMBER(' || ");
+    sbTypeNameCase.append(sDataPrecision);
+    sbTypeNameCase.append(" || ',' || ");
+    sbTypeNameCase.append(sDataScale);
+    sbTypeNameCase.append(" || ')' \r\n");
+    
+    // NUMBER with precision only
+    sbTypeNameCase.append("        WHEN ");
+    sbTypeNameCase.append(sDataType);
+    sbTypeNameCase.append(" = 'NUMBER' AND ");
+    sbTypeNameCase.append(sDataPrecision);
+    sbTypeNameCase.append(" IS NOT NULL THEN 'NUMBER(' || ");
+    sbTypeNameCase.append(sDataPrecision);
+    sbTypeNameCase.append(" || ')' \r\n");
+    
+    // RAW with length
+    sbTypeNameCase.append("        WHEN ");
+    sbTypeNameCase.append(sDataType);
+    sbTypeNameCase.append(" = 'RAW' AND ");
+    sbTypeNameCase.append(sDataLength);
+    sbTypeNameCase.append(" IS NOT NULL THEN 'RAW(' || ");
+    sbTypeNameCase.append(sDataLength);
+    sbTypeNameCase.append(" || ')' \r\n");
+    
+    // VARCHAR2 with length
+    sbTypeNameCase.append("        WHEN ");
+    sbTypeNameCase.append(sDataType);
+    sbTypeNameCase.append(" = 'VARCHAR2' AND ");
+    sbTypeNameCase.append(sDataLength);
+    sbTypeNameCase.append(" IS NOT NULL THEN 'VARCHAR2(' || ");
+    sbTypeNameCase.append(sDataLength);
+    sbTypeNameCase.append(" || ')' \r\n");
+    
+    // CHAR with length
+    sbTypeNameCase.append("        WHEN ");
+    sbTypeNameCase.append(sDataType);
+    sbTypeNameCase.append(" = 'CHAR' AND ");
+    sbTypeNameCase.append(sDataLength);
+    sbTypeNameCase.append(" IS NOT NULL THEN 'CHAR(' || ");
+    sbTypeNameCase.append(sDataLength);
+    sbTypeNameCase.append(" || ')' \r\n");
+    
+    // Default case - just the type name
+    sbTypeNameCase.append("        ELSE ");
+    sbTypeNameCase.append(sDataType);
+    sbTypeNameCase.append(" \r\n");
+    sbTypeNameCase.append("      END \r\n");
+
+    // Handle user-defined types
     sbTypeNameCase.append("    ELSE '\"' || ");
     sbTypeNameCase.append(sTypeOwner);
     sbTypeNameCase.append(" || '\".\"' || ");
     sbTypeNameCase.append(sTypeName);
     sbTypeNameCase.append(" || '\"'\r\n");
     sbTypeNameCase.append("  END");
+    
     return sbTypeNameCase.toString();
-  } /* getTypeNameCase */
+  }
 
   /*------------------------------------------------------------------*/
   private String getSizeCase(String sDataType, String sLength, String sPrecision)
@@ -361,7 +411,7 @@ public class OracleDatabaseMetaData
       "  C.TABLE_NAME AS TABLE_NAME,\r\n" +
       "  C.COLUMN_NAME AS COLUMN_NAME,\r\n" +
       getDataTypeCase("C.DATA_TYPE","T.TYPECODE") + " AS DATA_TYPE,\r\n" +
-      getTypeNameCase("C.DATA_TYPE","C.DATA_TYPE_OWNER","C.DATA_TYPE") + " AS TYPE_NAME,\r\n" +
+      getTypeNameCase("C.DATA_TYPE","C.DATA_TYPE_OWNER","T.TYPE_NAME","C.DATA_LENGTH","C.DATA_PRECISION","C.DATA_SCALE") + " AS TYPE_NAME,\r\n" +
       getSizeCase("C.DATA_TYPE","C.DATA_LENGTH","C.DATA_PRECISION") + " AS COLUMN_SIZE,\r\n" +
       "  CAST(NULL AS NUMBER) AS BUFFER_LENGTH,\r\n" +
       "  C.DATA_SCALE AS DECIMAL_DIGITS,\r\n" +
@@ -486,7 +536,7 @@ public class OracleDatabaseMetaData
 			"A.TYPE_NAME as TYPE_NAME,\r\n" +
 			"A.ATTR_NAME as ATTR_NAME,\r\n" +
       getDataTypeCase("A.ATTR_TYPE_NAME","T.TYPECODE") + " AS DATA_TYPE,\r\n" +
-			getTypeNameCase("A.ATTR_TYPE_NAME","A.ATTR_TYPE_OWNER","A.ATTR_TYPE_NAME") + " AS ATTR_TYPE_NAME,\r\n" +
+			getTypeNameCase("A.ATTR_TYPE_NAME","A.ATTR_TYPE_OWNER","A.ATTR_TYPE_NAME","A.LENGTH","A.PRECISION","A.SCALE") + " AS ATTR_TYPE_NAME,\r\n" +
 			getSizeCase("A.ATTR_TYPE_NAME","A.LENGTH","A.PRECISION") + " as ATTR_SIZE,\r\n" +
 			"A.SCALE as DECIMAL_DIGITS,\r\n" +
 			"10 as NUM_PREC_RADIX,\r\n" +
@@ -699,7 +749,7 @@ public class OracleDatabaseMetaData
     sbSql.append(" AS COLUMN_TYPE,\r\n");
     sbSql.append(getDataTypeCase("A.DATA_TYPE","T.TYPECODE"));
     sbSql.append(" AS DATA_TYPE,\r\n");
-    sbSql.append(getTypeNameCase("A.DATA_TYPE","A.TYPE_OWNER","A.TYPE_NAME"));
+    sbSql.append(getTypeNameCase("A.DATA_TYPE","A.TYPE_OWNER","A.TYPE_NAME","A.DATA_LENGTH","A.DATA_PRECISION","A.DATA_SCALE"));
     sbSql.append(" AS TYPE_NAME,\r\n");
     sbSql.append(getSizeCase("A.DATA_TYPE","A.DATA_LENGTH","A.DATA_PRECISION"));
     sbSql.append(" AS PRECISION,\r\n");
