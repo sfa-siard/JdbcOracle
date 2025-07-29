@@ -255,13 +255,13 @@ public class OracleDatabaseMetaData
                                  String sDataLength, String sDataPrecision, String sDataScale) {
     StringBuilder sbTypeNameCase = new StringBuilder("  CASE \r\n");
 
-    // Handle built-in Oracle types with precision/scale/length
+    // Built-in Oracle types
     sbTypeNameCase.append("    WHEN ");
     sbTypeNameCase.append(sTypeOwner);
     sbTypeNameCase.append(" IS NULL THEN \r\n");
     sbTypeNameCase.append("      CASE \r\n");
     
-    // NUMBER with precision and scale
+    // Numeric types
     sbTypeNameCase.append("        WHEN ");
     sbTypeNameCase.append(sDataType);
     sbTypeNameCase.append(" = 'NUMBER' AND ");
@@ -273,8 +273,6 @@ public class OracleDatabaseMetaData
     sbTypeNameCase.append(" || ',' || ");
     sbTypeNameCase.append(sDataScale);
     sbTypeNameCase.append(" || ')' \r\n");
-    
-    // NUMBER with precision only
     sbTypeNameCase.append("        WHEN ");
     sbTypeNameCase.append(sDataType);
     sbTypeNameCase.append(" = 'NUMBER' AND ");
@@ -282,8 +280,15 @@ public class OracleDatabaseMetaData
     sbTypeNameCase.append(" IS NOT NULL THEN 'NUMBER(' || ");
     sbTypeNameCase.append(sDataPrecision);
     sbTypeNameCase.append(" || ')' \r\n");
+    sbTypeNameCase.append("        WHEN ");
+    sbTypeNameCase.append(sDataType);
+    sbTypeNameCase.append(" = 'FLOAT' AND ");
+    sbTypeNameCase.append(sDataPrecision);
+    sbTypeNameCase.append(" IS NOT NULL THEN 'FLOAT(' || ");
+    sbTypeNameCase.append(sDataPrecision);
+    sbTypeNameCase.append(" || ')' \r\n");
     
-    // RAW with length
+    // Binary types
     sbTypeNameCase.append("        WHEN ");
     sbTypeNameCase.append(sDataType);
     sbTypeNameCase.append(" = 'RAW' AND ");
@@ -292,7 +297,7 @@ public class OracleDatabaseMetaData
     sbTypeNameCase.append(sDataLength);
     sbTypeNameCase.append(" || ')' \r\n");
     
-    // VARCHAR2 with length
+    // Character types
     sbTypeNameCase.append("        WHEN ");
     sbTypeNameCase.append(sDataType);
     sbTypeNameCase.append(" = 'VARCHAR2' AND ");
@@ -300,8 +305,13 @@ public class OracleDatabaseMetaData
     sbTypeNameCase.append(" IS NOT NULL THEN 'VARCHAR2(' || ");
     sbTypeNameCase.append(sDataLength);
     sbTypeNameCase.append(" || ')' \r\n");
-    
-    // CHAR with length
+    sbTypeNameCase.append("        WHEN ");
+    sbTypeNameCase.append(sDataType);
+    sbTypeNameCase.append(" = 'VARCHAR' AND ");
+    sbTypeNameCase.append(sDataLength);
+    sbTypeNameCase.append(" IS NOT NULL THEN 'VARCHAR(' || ");
+    sbTypeNameCase.append(sDataLength);
+    sbTypeNameCase.append(" || ')' \r\n");
     sbTypeNameCase.append("        WHEN ");
     sbTypeNameCase.append(sDataType);
     sbTypeNameCase.append(" = 'CHAR' AND ");
@@ -309,14 +319,67 @@ public class OracleDatabaseMetaData
     sbTypeNameCase.append(" IS NOT NULL THEN 'CHAR(' || ");
     sbTypeNameCase.append(sDataLength);
     sbTypeNameCase.append(" || ')' \r\n");
+    sbTypeNameCase.append("        WHEN ");
+    sbTypeNameCase.append(sDataType);
+    sbTypeNameCase.append(" = 'NCHAR' AND ");
+    sbTypeNameCase.append(sDataLength);
+    sbTypeNameCase.append(" IS NOT NULL THEN 'NCHAR(' || ");
+    sbTypeNameCase.append(sDataLength);
+    sbTypeNameCase.append(" || ')' \r\n");
+    sbTypeNameCase.append("        WHEN ");
+    sbTypeNameCase.append(sDataType);
+    sbTypeNameCase.append(" = 'NVARCHAR2' AND ");
+    sbTypeNameCase.append(sDataLength);
+    sbTypeNameCase.append(" IS NOT NULL THEN 'NVARCHAR2(' || ");
+    sbTypeNameCase.append(sDataLength);
+    sbTypeNameCase.append(" || ')' \r\n");
+    sbTypeNameCase.append("        WHEN ");
+    sbTypeNameCase.append(sDataType);
+    sbTypeNameCase.append(" = 'NVARCHAR' AND ");
+    sbTypeNameCase.append(sDataLength);
+    sbTypeNameCase.append(" IS NOT NULL THEN 'NVARCHAR(' || ");
+    sbTypeNameCase.append(sDataLength);
+    sbTypeNameCase.append(" || ')' \r\n");
     
-    // Default case - just the type name
+    // Date/time types
+    sbTypeNameCase.append("        WHEN ");
+    sbTypeNameCase.append(sDataType);
+    sbTypeNameCase.append(" = 'TIMESTAMP' AND ");
+    sbTypeNameCase.append(sDataScale);
+    sbTypeNameCase.append(" IS NOT NULL THEN 'TIMESTAMP(' || ");
+    sbTypeNameCase.append(sDataScale);
+    sbTypeNameCase.append(" || ')' \r\n");
+    sbTypeNameCase.append("        WHEN ");
+    sbTypeNameCase.append(sDataType);
+    sbTypeNameCase.append(" = 'TIMESTAMP WITH TIME ZONE' AND ");
+    sbTypeNameCase.append(sDataScale);
+    sbTypeNameCase.append(" IS NOT NULL THEN 'TIMESTAMP(' || ");
+    sbTypeNameCase.append(sDataScale);
+    sbTypeNameCase.append(" || ') WITH TIME ZONE' \r\n");
+    sbTypeNameCase.append("        WHEN ");
+    sbTypeNameCase.append(sDataType);
+    sbTypeNameCase.append(" = 'TIMESTAMP WITH LOCAL TIME ZONE' AND ");
+    sbTypeNameCase.append(sDataScale);
+    sbTypeNameCase.append(" IS NOT NULL THEN 'TIMESTAMP(' || ");
+    sbTypeNameCase.append(sDataScale);
+    sbTypeNameCase.append(" || ') WITH LOCAL TIME ZONE' \r\n");
+    
+    // Row identifier types
+    sbTypeNameCase.append("        WHEN ");
+    sbTypeNameCase.append(sDataType);
+    sbTypeNameCase.append(" = 'UROWID' AND ");
+    sbTypeNameCase.append(sDataLength);
+    sbTypeNameCase.append(" IS NOT NULL THEN 'UROWID(' || ");
+    sbTypeNameCase.append(sDataLength);
+    sbTypeNameCase.append(" || ')' \r\n");
+    
+    // Default types with just the base type name
     sbTypeNameCase.append("        ELSE ");
     sbTypeNameCase.append(sDataType);
     sbTypeNameCase.append(" \r\n");
     sbTypeNameCase.append("      END \r\n");
 
-    // Handle user-defined types
+    // User-defined types
     sbTypeNameCase.append("    ELSE '\"' || ");
     sbTypeNameCase.append(sTypeOwner);
     sbTypeNameCase.append(" || '\".\"' || ");
