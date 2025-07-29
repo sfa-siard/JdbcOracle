@@ -22,7 +22,6 @@ import ch.enterag.sqlparser.datatype.*;
 import ch.enterag.sqlparser.datatype.enums.*;
 import ch.enterag.sqlparser.identifier.*;
 
-/*====================================================================*/
 /** OracleMetaColumns implements the type translation from Oracle to ISO SQL.
  * N.B.: column TYPE_NAME (6) has the original Oracle data type name.
  * @author Hartwig Thomas
@@ -41,9 +40,8 @@ public class OracleMetaColumns
   private static Pattern _patType = Pattern.compile("^(.*?)(\\(\\s*(\\d+)\\s*(,\\s*(\\d)+\\s*)?\\))?$");
   private static final int _iDEFAULT_TABLE_MAXIMUM = Integer.MAX_VALUE;
   
-  private static Map<String, PreType> mapNAME_ORACLE_TO_ISO = new HashMap<String, PreType>();
-  // private static Map<Integer, Integer> mapTYPE_ORACLE_TO_ISO = new HashMap<Integer, Integer>();
-  static 
+  private static Map<String, PreType> mapNAME_ORACLE_TO_ISO = new HashMap<>();
+  static
   {
     mapNAME_ORACLE_TO_ISO.put("INTERVALDS", PreType.INTERVAL);
     mapNAME_ORACLE_TO_ISO.put("INTERVALYM", PreType.INTERVAL);
@@ -80,40 +78,6 @@ public class OracleMetaColumns
     mapNAME_ORACLE_TO_ISO.put("DOUBLE PRECISION", PreType.DOUBLE);
     mapNAME_ORACLE_TO_ISO.put("BINARY_FLOAT", PreType.REAL);
     mapNAME_ORACLE_TO_ISO.put("BINARY_DOUBLE", PreType.DOUBLE);
-    
-
-    /***
-    mapTYPE_ORACLE_TO_ISO.put(new Integer(-104), new Integer(Types.OTHER)); // INTERVALDS
-    mapTYPE_ORACLE_TO_ISO.put(new Integer(-103), new Integer(Types.OTHER)); // INTERVALYM
-    mapTYPE_ORACLE_TO_ISO.put(new Integer(-102), new Integer(Types.TIMESTAMP)); // TIMESTAMP WITH LOCAL TIME ZONE
-    mapTYPE_ORACLE_TO_ISO.put(new Integer(-101), new Integer(Types.TIMESTAMP)); // TIMESTAMP WITH TIME ZONE
-    mapTYPE_ORACLE_TO_ISO.put(new Integer(Types.BIT), new Integer(Types.BOOLEAN));
-    mapTYPE_ORACLE_TO_ISO.put(new Integer(Types.TINYINT), new Integer(Types.SMALLINT));
-    mapTYPE_ORACLE_TO_ISO.put(new Integer(Types.BIGINT), new Integer(Types.BIGINT));
-    mapTYPE_ORACLE_TO_ISO.put(new Integer(Types.LONGVARBINARY), new Integer(Types.BLOB));
-    mapTYPE_ORACLE_TO_ISO.put(new Integer(Types.VARBINARY), new Integer(Types.VARBINARY));
-    mapTYPE_ORACLE_TO_ISO.put(new Integer(Types.LONGVARCHAR), new Integer(Types.CLOB));
-    mapTYPE_ORACLE_TO_ISO.put(new Integer(Types.CHAR), new Integer(Types.CHAR));
-    mapTYPE_ORACLE_TO_ISO.put(new Integer(Types.NUMERIC), new Integer(Types.NUMERIC));
-    mapTYPE_ORACLE_TO_ISO.put(new Integer(Types.INTEGER), new Integer(Types.DECIMAL));
-    mapTYPE_ORACLE_TO_ISO.put(new Integer(Types.SMALLINT), new Integer(Types.SMALLINT));
-    mapTYPE_ORACLE_TO_ISO.put(new Integer(Types.FLOAT), new Integer(Types.FLOAT));
-    mapTYPE_ORACLE_TO_ISO.put(new Integer(Types.REAL), new Integer(Types.REAL));
-    mapTYPE_ORACLE_TO_ISO.put(new Integer(Types.VARCHAR), new Integer(Types.VARCHAR));
-    mapTYPE_ORACLE_TO_ISO.put(new Integer(Types.TIME), new Integer(Types.TIME));
-    mapTYPE_ORACLE_TO_ISO.put(new Integer(Types.TIMESTAMP), new Integer(Types.TIMESTAMP));
-    mapTYPE_ORACLE_TO_ISO.put(new Integer(Types.BLOB), new Integer(Types.BLOB));
-    mapTYPE_ORACLE_TO_ISO.put(new Integer(Types.CLOB), new Integer(Types.CLOB));
-    mapTYPE_ORACLE_TO_ISO.put(new Integer(Types.NCHAR), new Integer(Types.NCHAR));
-    mapTYPE_ORACLE_TO_ISO.put(new Integer(Types.NVARCHAR), new Integer(Types.NVARCHAR));
-    mapTYPE_ORACLE_TO_ISO.put(new Integer(Types.NCLOB), new Integer(Types.NCLOB));
-    mapTYPE_ORACLE_TO_ISO.put(new Integer(Types.SQLXML), new Integer(Types.SQLXML));
-    mapTYPE_ORACLE_TO_ISO.put(new Integer(Types.ROWID), new Integer(Types.BIGINT));
-    mapTYPE_ORACLE_TO_ISO.put(new Integer(2007), new Integer(Types.SQLXML)); // XMLType
-    mapTYPE_ORACLE_TO_ISO.put(new Integer(100), new Integer(Types.FLOAT)); // BINARY_FLOAT
-    mapTYPE_ORACLE_TO_ISO.put(new Integer(101), new Integer(Types.DOUBLE)); // BINARY_DOUBLE
-    mapTYPE_ORACLE_TO_ISO.put(new Integer(-13), new Integer(Types.BLOB)); // BFILE
-    ***/
   }
   
   protected int _iCatalog = -1;
@@ -124,7 +88,6 @@ public class OracleMetaColumns
   private int _iLength = -1;
   private int _iScale = -1;
   
-  /*------------------------------------------------------------------*/
   private static QualifiedId parseTypeName(String sTypeName)
   {
     QualifiedId qiTypeName = new QualifiedId();
@@ -135,9 +98,8 @@ public class OracleMetaColumns
     }
     catch(ParseException pe) { qiTypeName.setName(sTypeName); }
     return qiTypeName;
-  } /* parseTypeName */
+  }
   
-  /*------------------------------------------------------------------*/
   private static PredefinedType getPredefinedType(String sTypeName, int iColumnSize, int iDecimals)
   {
     BaseSqlFactory bsf = new BaseSqlFactory();
@@ -186,9 +148,8 @@ public class OracleMetaColumns
       preType.initialize(pt.getSqlType(), iColumnSize, iDecimals);
     }
     return preType;
-  } /* getPredefinedType */
+  }
   
-  /*------------------------------------------------------------------*/
   static int getDataType(int iType, String sTypeName, long lColumnSize, int iDecimals,
     Connection conn, String sCatalogName, String sSchemaName)
     throws SQLException
@@ -214,10 +175,9 @@ public class OracleMetaColumns
     }
     _il.exit(SqlTypes.getTypeName(iType));
     return iType;
-  } /* getDataType */
+  }
   
-  /*------------------------------------------------------------------*/
-  static long getColumnSize(int iType, String sTypeName, 
+  static long getColumnSize(int iType, String sTypeName,
     long lColumnSize, int iDecimals, Connection conn, String sCatalogName, 
     String sSchemaName)
     throws SQLException
@@ -230,9 +190,8 @@ public class OracleMetaColumns
         (iDataType == Types.SQLXML))
       lColumnSize = -1;
     return lColumnSize;
-  } /* getColumnSize */
+  }
   
-  /*------------------------------------------------------------------*/
   static String getFullArrayTypeName(Connection conn, QualifiedId qiVarray)
     throws SQLException
   {
@@ -290,9 +249,8 @@ public class OracleMetaColumns
     sTypeName = sBaseType + " ARRAY["+sNumber+"]";
     _il.exit(sTypeName);
     return sTypeName;
-  } /* getFullArrayTypeName */
+  }
   
-  /*------------------------------------------------------------------*/
   static String getTypeName(String sTypeName, int iDataType, int iColumnSize, int iDecimals,
                             Connection conn, String sCatalogName, String sSchemaName)
           throws SQLException {
@@ -329,9 +287,8 @@ public class OracleMetaColumns
     }
     _il.exit(sTypeName);
     return sTypeName;
-  } /* getTypeName */
+  }
   
-  /*------------------------------------------------------------------*/
   /** constructor
    * @param rsWrapped DatabaseMetaData.getColumns() result set to be wrapped.
    */
@@ -348,9 +305,8 @@ public class OracleMetaColumns
     _iPrecision = iPrecision;
     _iLength = iLength;
     _iScale = iScale;
-  } /* constructor */
+  }
   
-  /*------------------------------------------------------------------*/
   /** {@inheritDoc}
    * Type name (mapped to ISO SQL) is returned in TYPE_NAME.
    * Original type name can be retrieved by using unwrap. 
@@ -390,9 +346,8 @@ public class OracleMetaColumns
           super.getString(_iSchema));
     }
     return sResult;
-  } /* getString */
+  }
 
-  /*------------------------------------------------------------------*/
   /** {@inheritDoc}
    * Mapped java.sql.Types type is returned in DATA_TYPE.
    * Original java.sql.Types type can be retrieved by using unwrap. 
@@ -433,9 +388,8 @@ public class OracleMetaColumns
     else
       iResult = super.getInt(columnIndex);
     return iResult;
-  } /* getInt */
+  }
   
-  /*------------------------------------------------------------------*/
   /** {@inheritDoc}
    * Mapped java.sql.Types type is returned in DATA_TYPE.
    * Original java.sql.Types type can be retrieved by using unwrap. 
@@ -476,9 +430,8 @@ public class OracleMetaColumns
     else
       lResult = super.getLong(columnIndex);
     return lResult;
-  } /* getLong */
+  }
   
-  /*------------------------------------------------------------------*/
   /** {@inheritDoc}
    * Mapped java.sql.Types type is returned in DATA_TYPE.
    * Original java.sql.Types type can be retrieved by using unwrap. 
@@ -496,17 +449,16 @@ public class OracleMetaColumns
       {
         BigDecimal bd = (BigDecimal)oResult;
         long l = bd.longValueExact();
-        oResult = Long.valueOf(l);
+        oResult = l;
       }
       catch (ArithmeticException ae) {}
     }
     if (oResult instanceof Integer)
-      oResult = Integer.valueOf(getInt(columnIndex));
+      oResult = getInt(columnIndex);
     else if (oResult instanceof Long)
-      oResult = Long.valueOf(getLong(columnIndex));
+      oResult = getLong(columnIndex);
     else if (oResult instanceof String)
       oResult = getString(columnIndex);
     return oResult;
-  } /* getObject */
-  
-} /* OracleMetaColumns */
+  }
+}
