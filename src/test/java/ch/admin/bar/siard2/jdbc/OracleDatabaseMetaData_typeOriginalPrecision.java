@@ -51,23 +51,15 @@ class OracleDatabaseMetaData_typeOriginalPrecision {
         ResultSet resultSet = oracleDatabaseMetaData.getColumns("%", "TESTUSER", "VARCHARTEST", "TEXT%");
 
         Columns columns = new Columns(resultSet);
-        Column text2 = columns.pick("TEXT2");
-        assertEquals(1, text2
-                               .getSize());
-        assertEquals("VARCHAR2(1)", text2
-                                           .getType());
 
-        Column text3 = columns.pick("TEXT3");
-        assertEquals(255, text3
-                .getSize());
-        assertEquals("VARCHAR2(255)", text3
-                .getType());
+        assertEquals(1, columns.sizeOf("TEXT2"));
+        assertEquals("VARCHAR2(1)", columns.typeOf("TEXT2"));
 
-        Column text4 = columns.pick("TEXT4");
-        assertEquals(4000, text4
-                .getSize());
-        assertEquals("VARCHAR2(4000)", text4
-                .getType());
+        assertEquals(255, columns.sizeOf("TEXT3"));
+        assertEquals("VARCHAR2(255)", columns.typeOf("TEXT3"));
+
+        assertEquals(4000, columns.sizeOf("TEXT4"));
+        assertEquals("VARCHAR2(4000)", columns.typeOf("TEXT4"));
     }
 
     @Getter
@@ -101,6 +93,14 @@ class OracleDatabaseMetaData_typeOriginalPrecision {
                                              .equals(columnName))
                                .findFirst()
                                .orElseThrow(() -> new IllegalArgumentException("Column \"" + columnName + "\" not found"));
+        }
+
+        public long sizeOf(String column) {
+            return this.pick(column).getSize();
+        }
+
+        public String typeOf(String column) {
+            return this.pick(column).getType();
         }
     }
 }
