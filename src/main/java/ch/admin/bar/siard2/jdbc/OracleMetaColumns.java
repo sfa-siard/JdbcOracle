@@ -149,7 +149,7 @@ public class OracleMetaColumns
     }
     return preType;
   }
-  
+
   static int getDataType(int iType, String sTypeName, long lColumnSize, int iDecimals,
     Connection conn, String sCatalogName, String sSchemaName)
     throws SQLException
@@ -158,14 +158,8 @@ public class OracleMetaColumns
     if (iType != Types.ARRAY)
     {
       QualifiedId qiTypeName = parseTypeName(sTypeName);
-      String sBaseTypeName = qiTypeName.getName();
-      
-      if (sBaseTypeName != null && sBaseTypeName.contains("(")) {
-        int iParenIndex = sBaseTypeName.indexOf('(');
-        sBaseTypeName = sBaseTypeName.substring(0, iParenIndex);
-      }
-      
-      PredefinedType preType = getPredefinedType(sBaseTypeName,(int)lColumnSize,iDecimals);
+      String baseTypeName = getBaseTypeName(qiTypeName.getName());
+      PredefinedType preType = getPredefinedType(baseTypeName,(int)lColumnSize,iDecimals);
       if (preType.getType() != null)
         iType = preType.getType().getSqlType();
       else if ("ANYDATA".equals(qiTypeName.getName()) && "SYS".equals(qiTypeName.getSchema()))
@@ -175,6 +169,14 @@ public class OracleMetaColumns
     }
     _il.exit(SqlTypes.getTypeName(iType));
     return iType;
+  }
+
+  private static String getBaseTypeName(String typeName) {
+    if (typeName != null && typeName.contains("(")) {
+      int parenIndex = typeName.indexOf('(');
+      return typeName.substring(0, parenIndex);
+    }
+    return typeName;
   }
   
   static long getColumnSize(int iType, String sTypeName,
