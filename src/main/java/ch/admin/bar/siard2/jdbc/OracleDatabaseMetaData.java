@@ -772,10 +772,12 @@ public class OracleDatabaseMetaData
         sbCaseColumnType.append(DatabaseMetaData.procedureColumnUnknown);
         sbCaseColumnType.append("\r\n");
         sbCaseColumnType.append("  END");
-        StringBuilder sbSpecificName = new StringBuilder("  CASE\r\n");
-        sbSpecificName.append("    WHEN P.PROCEDURE_NAME IS NULL THEN P.OBJECT_NAME\r\n");
-        sbSpecificName.append("    ELSE P.PROCEDURE_NAME || '.' || P.OBJECT_NAME\r\n");
-        sbSpecificName.append("  END");
+        StringBuilder sbSpecificName = new StringBuilder("CASE\r\n");
+        sbSpecificName.append(" WHEN P.PROCEDURE_NAME IS NULL AND P.OVERLOAD IS NULL THEN P.OBJECT_NAME\r\n");
+        sbSpecificName.append(" WHEN P.PROCEDURE_NAME IS NULL AND P.OVERLOAD IS NOT NULL THEN P.OBJECT_NAME || '_' || P.OVERLOAD\r\n");
+        sbSpecificName.append(" WHEN P.OVERLOAD IS NULL THEN P.PROCEDURE_NAME || '.' || P.OBJECT_NAME\r\n");
+        sbSpecificName.append(" ELSE P.PROCEDURE_NAME || '.' || P.OBJECT_NAME || '_' || P.OVERLOAD\r\n");
+        sbSpecificName.append("END");
 
         StringBuilder sbSql = new StringBuilder("SELECT\r\n");
         sbSql.append("  NULL AS PROCEDURE_CAT,\r\n");
@@ -867,8 +869,10 @@ public class OracleDatabaseMetaData
         sbCaseProcType.append("\r\n");
         sbCaseProcType.append("END");
         StringBuilder sbSpecificName = new StringBuilder("CASE\r\n");
-        sbSpecificName.append(" WHEN P.PROCEDURE_NAME IS NULL THEN P.OBJECT_NAME\r\n");
-        sbSpecificName.append(" ELSE P.PROCEDURE_NAME || '.' || P.OBJECT_NAME\r\n");
+        sbSpecificName.append(" WHEN P.PROCEDURE_NAME IS NULL AND P.OVERLOAD IS NULL THEN P.OBJECT_NAME\r\n");
+        sbSpecificName.append(" WHEN P.PROCEDURE_NAME IS NULL AND P.OVERLOAD IS NOT NULL THEN P.OBJECT_NAME || '_' || P.OVERLOAD\r\n");
+        sbSpecificName.append(" WHEN P.OVERLOAD IS NULL THEN P.PROCEDURE_NAME || '.' || P.OBJECT_NAME\r\n");
+        sbSpecificName.append(" ELSE P.PROCEDURE_NAME || '.' || P.OBJECT_NAME || '_' || P.OVERLOAD\r\n");
         sbSpecificName.append("END");
 
         StringBuilder sbSql = new StringBuilder("SELECT\r\n");
