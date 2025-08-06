@@ -214,8 +214,7 @@ public class OracleDatabaseMetaData
         mapDataType.put("OBJECT", Types.STRUCT);
         mapDataType.put("DATALINK", Types.BLOB);
         StringBuilder sbDataTypeCase = new StringBuilder("  CASE\r\n");
-        for (Iterator<String> iterTypeName = mapDataType.keySet().iterator(); iterTypeName.hasNext(); ) {
-            String sTypeName = iterTypeName.next();
+        for (String sTypeName : mapDataType.keySet()) {
             int iDataType = mapDataType.get(sTypeName);
             sbDataTypeCase.append("    WHEN ");
             if ((iDataType != Types.ARRAY) && (iDataType != Types.STRUCT) && (!sTypeName.equals("ANYDATA")))
@@ -486,7 +485,7 @@ public class OracleDatabaseMetaData
                 "WHERE\r\n" +
                 sbCondition +
                 "ORDER BY TABLE_CAT, TABLE_SCHEM, TABLE_NAME, ORDINAL_POSITION";
-        ResultSet rsColumns = null;
+        ResultSet rsColumns;
         Connection conn = getConnection();
         _il.event("Unwrapped prepared query: " + sSql);
         PreparedStatement pstmt = conn.unwrap(Connection.class).prepareStatement(sSql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
@@ -502,11 +501,11 @@ public class OracleDatabaseMetaData
     public ResultSet getUDTs(String catalog, String schemaPattern, String typeNamePattern, int[] types)
             throws SQLException {
         _il.enter(catalog, schemaPattern, typeNamePattern, types);
-        ResultSet rsUdts = null;
+        ResultSet rsUdts;
         boolean bEmpty = true;
         if (types != null) {
-            for (int i = 0; i < types.length; i++) {
-                if (types[i] == Types.STRUCT)
+            for (int type : types) {
+                if (type == Types.STRUCT)
                     bEmpty = false;
             }
         } else
@@ -555,7 +554,7 @@ public class OracleDatabaseMetaData
     public ResultSet getAttributes(String catalog, String schemaPattern, String typeNamePattern, String attributeNamePattern)
             throws SQLException {
         _il.enter(catalog, schemaPattern, typeNamePattern, attributeNamePattern);
-        ResultSet rsAttributes = null;
+        ResultSet rsAttributes;
         StringBuilder sbCondition = new StringBuilder();
         sbCondition.append("A.TYPE_NAME LIKE ");
         sbCondition.append(SqlLiterals.formatStringLiteral(typeNamePattern));
@@ -612,7 +611,7 @@ public class OracleDatabaseMetaData
     @Override
     public ResultSet getSuperTables(String catalog, String schemaPattern,
                                     String tableNamePattern) throws SQLException {
-        ResultSet rs = null;
+        ResultSet rs;
         try {
             rs = super.getSuperTables(catalog, schemaPattern, tableNamePattern);
         } catch (SQLException se) {
@@ -628,7 +627,7 @@ public class OracleDatabaseMetaData
     public ResultSet getSuperTypes(String catalog, String schemaPattern, String typeNamePattern)
             throws SQLException {
         _il.enter(catalog, schemaPattern, typeNamePattern);
-        ResultSet rsSuperTypes = null;
+        ResultSet rsSuperTypes;
         StringBuilder sbCondition = new StringBuilder("SUPERTYPE_NAME IS NOT NULL\r\n");
         sbCondition.append(" AND TYPE_NAME LIKE ");
         sbCondition.append(SqlLiterals.formatStringLiteral(typeNamePattern));
@@ -672,7 +671,7 @@ public class OracleDatabaseMetaData
     public ResultSet getIndexInfo(String catalog, String schema, String table, boolean unique, boolean approximate)
             throws SQLException {
         _il.enter(catalog, schema, table, String.valueOf(unique), String.valueOf(approximate));
-        ResultSet rsIndexInfo = null;
+        ResultSet rsIndexInfo;
         StringBuilder sbCondition = new StringBuilder("I.TABLE_NAME = ");
         sbCondition.append(SqlLiterals.formatStringLiteral(table));
         sbCondition.append("\r\n");
@@ -823,7 +822,7 @@ public class OracleDatabaseMetaData
         sbSql.append(sbCondition);
         sbSql.append("ORDER BY PROCEDURE_CAT, PROCEDURE_SCHEM, PROCEDURE_NAME, SPECIFIC_NAME, ORDINAL_POSITION");
 
-        ResultSet rsProcedureColumns = null;
+        ResultSet rsProcedureColumns;
         Statement stmt = getConnection().createStatement();
         _il.event("Unwrapped query: " + sbSql);
         rsProcedureColumns = stmt.unwrap(Statement.class).executeQuery(sbSql.toString());
@@ -894,7 +893,7 @@ public class OracleDatabaseMetaData
         sbSql.append(sbCondition);
         sbSql.append("ORDER BY PROCEDURE_CAT, PROCEDURE_SCHEM, PROCEDURE_NAME, SPECIFIC_NAME");
 
-        ResultSet rsProcedures = null;
+        ResultSet rsProcedures;
         Statement stmt = getConnection().createStatement();
         _il.event("Unwrapped query: " + sbSql);
         rsProcedures = stmt.unwrap(Statement.class).executeQuery(sbSql.toString());
@@ -927,8 +926,7 @@ public class OracleDatabaseMetaData
             boolean bSystem = false;
             boolean bTemporary = false;
             Set<String> setObjectTypes = new HashSet<>();
-            for (int iType = 0; iType < types.length; iType++) {
-                String sType = types[iType];
+            for (String sType : types) {
                 if (sType.equals(sTABLE))
                     setObjectTypes.add(sTABLE);
                 else if (sType.equals(sVIEW))
@@ -1060,7 +1058,7 @@ public class OracleDatabaseMetaData
         sbSql.append("WHERE\r\n");
         sbSql.append(sbCondition);
         sbSql.append("ORDER BY TABLE_TYPE, TABLE_CAT, TABLE_SCHEM, TABLE_NAME");
-        ResultSet rsTables = null;
+        ResultSet rsTables;
         Connection conn = getConnection();
         _il.event("Unwrapped prepared query: " + sbSql);
         PreparedStatement pstmt = conn.unwrap(Connection.class).prepareStatement(sbSql.toString(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
@@ -1077,7 +1075,7 @@ public class OracleDatabaseMetaData
     public ResultSet getTableTypes()
             throws SQLException {
         _il.enter();
-        ResultSet rsTableTypes = null;
+        ResultSet rsTableTypes;
         StringBuilder sbSql = new StringBuilder("SELECT TABLE_TYPE FROM(\r\n");
         for (int iTableType = 0; iTableType < asTABLE_TYPES.length; iTableType++) {
             if (iTableType > 0)
@@ -1101,7 +1099,7 @@ public class OracleDatabaseMetaData
     public ResultSet getSchemas()
             throws SQLException {
         _il.enter();
-        ResultSet rsSchemas = null;
+        ResultSet rsSchemas;
         StringBuilder sbSql = new StringBuilder("SELECT\r\n");
         sbSql.append(sALIAS_ALL_USERS + "." + sCOLUMN_USERNAME + " AS TABLE_SCHEM,\r\n");
         sbSql.append("NULL AS TABLE_CATALOG\r\n");
@@ -1122,7 +1120,7 @@ public class OracleDatabaseMetaData
     public ResultSet getSchemas(String catalog, String schemaPattern)
             throws SQLException {
         _il.enter(catalog, schemaPattern);
-        ResultSet rsSchemas = null;
+        ResultSet rsSchemas;
         StringBuilder sbCondition = new StringBuilder();
         if (schemaPattern != null) {
             sbCondition.append("USERNAME LIKE ");
