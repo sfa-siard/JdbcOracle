@@ -412,6 +412,16 @@ public class OracleDatabaseMetaData
         return sbNullableCase.toString();
     }
 
+    private StringBuilder buildSpecificName() {
+        StringBuilder sbSpecificName = new StringBuilder("CASE\r\n");
+        sbSpecificName.append(" WHEN P.PROCEDURE_NAME IS NULL AND P.OVERLOAD IS NULL THEN P.OBJECT_NAME\r\n");
+        sbSpecificName.append(" WHEN P.PROCEDURE_NAME IS NULL AND P.OVERLOAD IS NOT NULL THEN P.OBJECT_NAME || '_' || P.OVERLOAD\r\n");
+        sbSpecificName.append(" WHEN P.OVERLOAD IS NULL THEN P.PROCEDURE_NAME || '.' || P.OBJECT_NAME\r\n");
+        sbSpecificName.append(" ELSE P.PROCEDURE_NAME || '.' || P.OBJECT_NAME || '_' || P.OVERLOAD\r\n");
+        sbSpecificName.append("END");
+        return sbSpecificName;
+    }
+
     /**
      * {@inheritDoc}
      * This returns a LONG for the column default. Make sure no other JDBC
@@ -771,18 +781,13 @@ public class OracleDatabaseMetaData
         sbCaseColumnType.append(DatabaseMetaData.procedureColumnUnknown);
         sbCaseColumnType.append("\r\n");
         sbCaseColumnType.append("  END");
-        StringBuilder sbSpecificName = new StringBuilder("CASE\r\n");
-        sbSpecificName.append(" WHEN P.PROCEDURE_NAME IS NULL AND P.OVERLOAD IS NULL THEN P.OBJECT_NAME\r\n");
-        sbSpecificName.append(" WHEN P.PROCEDURE_NAME IS NULL AND P.OVERLOAD IS NOT NULL THEN P.OBJECT_NAME || '_' || P.OVERLOAD\r\n");
-        sbSpecificName.append(" WHEN P.OVERLOAD IS NULL THEN P.PROCEDURE_NAME || '.' || P.OBJECT_NAME\r\n");
-        sbSpecificName.append(" ELSE P.PROCEDURE_NAME || '.' || P.OBJECT_NAME || '_' || P.OVERLOAD\r\n");
-        sbSpecificName.append("END");
+        StringBuilder sbSpecificName = buildSpecificName();
 
         StringBuilder sbSql = new StringBuilder("SELECT\r\n");
-        sbSql.append("  NULL AS PROCEDURE_CAT,\r\n");
-        sbSql.append("  A.OWNER AS PROCEDURE_SCHEM,\r\n");
-        sbSql.append("  A.OBJECT_NAME AS PROCEDURE_NAME,\r\n");
-        sbSql.append("  A.ARGUMENT_NAME AS COLUMN_NAME,\r\n");
+        sbSql.append("NULL AS PROCEDURE_CAT,\r\n");
+        sbSql.append("A.OWNER AS PROCEDURE_SCHEM,\r\n");
+        sbSql.append("A.OBJECT_NAME AS PROCEDURE_NAME,\r\n");
+        sbSql.append("A.ARGUMENT_NAME AS COLUMN_NAME,\r\n");
         sbSql.append(sbCaseColumnType);
         sbSql.append(" AS COLUMN_TYPE,\r\n");
         sbSql.append(getDataTypeCase("A.DATA_TYPE", "T.TYPECODE"));
@@ -867,12 +872,7 @@ public class OracleDatabaseMetaData
         sbCaseProcType.append(DatabaseMetaData.procedureResultUnknown);
         sbCaseProcType.append("\r\n");
         sbCaseProcType.append("END");
-        StringBuilder sbSpecificName = new StringBuilder("CASE\r\n");
-        sbSpecificName.append(" WHEN P.PROCEDURE_NAME IS NULL AND P.OVERLOAD IS NULL THEN P.OBJECT_NAME\r\n");
-        sbSpecificName.append(" WHEN P.PROCEDURE_NAME IS NULL AND P.OVERLOAD IS NOT NULL THEN P.OBJECT_NAME || '_' || P.OVERLOAD\r\n");
-        sbSpecificName.append(" WHEN P.OVERLOAD IS NULL THEN P.PROCEDURE_NAME || '.' || P.OBJECT_NAME\r\n");
-        sbSpecificName.append(" ELSE P.PROCEDURE_NAME || '.' || P.OBJECT_NAME || '_' || P.OVERLOAD\r\n");
-        sbSpecificName.append("END");
+        StringBuilder sbSpecificName = buildSpecificName();
 
         StringBuilder sbSql = new StringBuilder("SELECT\r\n");
         sbSql.append("NULL AS PROCEDURE_CAT,\r\n");
@@ -903,8 +903,8 @@ public class OracleDatabaseMetaData
 
     /**
      * {@inheritDoc}
-     * This returns a LONG for the view query. Make sure no other JDBC method
-     * is called between this and the next() statement!
+     * This returns a LONG for the view query. Make sure no other JDBC
+     * method is called between this and the next() statement!
      */
     @Override
     public ResultSet getTables(String catalog, String schemaPattern,
