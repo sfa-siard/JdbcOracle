@@ -152,6 +152,32 @@ public class OracleDatabaseMetaData
         return sb.toString();
     }
 
+    private Set<String> toObjectTypes(String[] types) {
+        Set<String> set = new HashSet<>();
+        for (String sType : types) {
+            switch (sType) {
+                case sTABLE:
+                    set.add(sTABLE);
+                    break;
+                case sVIEW:
+                    set.add(sVIEW);
+                    break;
+                case sSYNONYM:
+                    set.add(sSYNONYM);
+                    break;
+                case sGLOBAL_TEMPORARY:
+                    set.add(sTABLE);
+                    break;
+                case sSYSTEM_TABLE:
+                    set.add(sTABLE);
+                    break;
+                default:
+                    break;
+            }
+        }
+        return set;
+    }
+
     /**
      * constructor
      *
@@ -923,38 +949,23 @@ public class OracleDatabaseMetaData
             sbCondition.append("\r\n");
         }
         if (types != null) {
-            boolean bSystem = false;
-            boolean bTemporary = false;
-            Set<String> setObjectTypes = new HashSet<>();
-            for (String sType : types) {
-                if (sType.equals(sTABLE))
-                    setObjectTypes.add(sTABLE);
-                else if (sType.equals(sVIEW))
-                    setObjectTypes.add(sVIEW);
-                else if (sType.equals(sSYNONYM))
-                    setObjectTypes.add(sSYNONYM);
-                else if (sType.equals(sGLOBAL_TEMPORARY)) {
-                    setObjectTypes.add(sTABLE);
-                    bTemporary = true;
-                } else if (sType.equals(sSYSTEM_TABLE)) {
-                    setObjectTypes.add(sTABLE);
-                    bSystem = true;
-                }
-            }
-            if (setObjectTypes.size() > 0) {
+            Set<String> setObjectTypes = toObjectTypes(types);
+            boolean bSystem = Arrays.asList(types).contains(sSYSTEM_TABLE);
+            boolean bTemporary = Arrays.asList(types).contains(sGLOBAL_TEMPORARY);
+
+            if (!setObjectTypes.isEmpty()) {
                 sbCondition.append(" AND (\r\n");
                 boolean bFirst = true;
-                for (Iterator<String> iterObjectType = setObjectTypes.iterator(); iterObjectType.hasNext(); ) {
+                for (String setObjectType : setObjectTypes) {
                     if (bFirst)
                         bFirst = false;
                     else
                         sbCondition.append(" OR ");
-                    String sObjectType = iterObjectType.next();
                     sbCondition.append("(O.OBJECT_TYPE = ");
-                    sbCondition.append(SqlLiterals.formatStringLiteral(sObjectType));
-                    if (sObjectType.equals("TABLE"))
+                    sbCondition.append(SqlLiterals.formatStringLiteral(setObjectType));
+                    if (setObjectType.equals("TABLE"))
                         sbCondition.append(" AND NOT T.TABLE_NAME IS NULL");
-                    else if (sObjectType.equals("VIEW"))
+                    else if (setObjectType.equals("VIEW"))
                         sbCondition.append(" AND NOT V.VIEW_NAME IS NULL");
                     sbCondition.append(")\r\n");
                 }
@@ -968,9 +979,7 @@ public class OracleDatabaseMetaData
                 sbCondition.append(SqlLiterals.formatStringLiteral("N"));
                 sbCondition.append("\r\n");
             }
-            String sTemporary = "N";
-            if (bTemporary)
-                sTemporary = "Y";
+            String sTemporary = bTemporary ? "Y" : "N";
             sbCondition.append("AND O.TEMPORARY = ");
             sbCondition.append(SqlLiterals.formatStringLiteral(sTemporary));
             sbCondition.append("\r\n");
