@@ -126,7 +126,7 @@ public class OracleMetaColumns
                             pt = PreType.BIGINT;
                     }
                 } else {
-                    pt = PreType.FLOAT;
+                    pt = PreType.BIGINT;
                     iDecimals = PredefinedType.iUNDEFINED;
                     iColumnSize = PredefinedType.iUNDEFINED;
                 }
