@@ -16,9 +16,6 @@ sourceControl {
         producesModule("ch.admin.bar:SqlParser")
     }
     gitRepository(URI.create("https://github.com/sfa-siard/JdbcBase.git")) {
-        producesModule("ch.admin.bar:JdbcBase")
-    }
-    gitRepository(URI.create("https://github.com/sfa-siard/JdbcBase.git")) {
         producesModule("ch.admin.bar:jdbc-base")
     }
 }

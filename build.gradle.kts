@@ -17,7 +17,7 @@ java {
 group = "ch.admin.bar"
 version = scmVersion.version
 val versions = mapOf(
-    "jdbc-base" to "v2.2.10",
+    "jdbc-base" to "v2.2.11",
 )
 
 repositories {
@@ -29,8 +29,8 @@ repositories {
 
 dependencies {
     implementation("org.antlr:antlr4-runtime:4.5.2")
-    implementation("ch.admin.bar:enterutilities:v2.2.4")
-    implementation("ch.admin.bar:SqlParser:v2.2.3")
+    implementation("ch.admin.bar:enterutilities:v2.2.5")
+    implementation("ch.admin.bar:SqlParser:v2.2.4")
     implementation("com.oracle.database.xml:xdb6:18.3.0.0")
     implementation("com.oracle.ojdbc:xdb:19.3.0.0")
     implementation("com.oracle.database.jdbc:ojdbc6:11.2.0.4")
