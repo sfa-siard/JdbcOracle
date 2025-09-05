@@ -22,9 +22,6 @@ val versions = mapOf(
 
 repositories {
     mavenCentral()
-    flatDir {
-        dirs("lib")
-    }
 }
 
 dependencies {
@@ -33,11 +30,9 @@ dependencies {
     implementation("ch.admin.bar:SqlParser:v2.2.4")
     implementation("com.oracle.database.xml:xdb6:18.3.0.0")
     implementation("com.oracle.ojdbc:xdb:19.3.0.0")
-    implementation("com.oracle.database.jdbc:ojdbc6:11.2.0.4")
     implementation("com.oracle.ojdbc:ojdbc8:19.3.0.0")
     implementation("com.oracle.ojdbc:xmlparserv2:19.3.0.0")
     implementation("ch.admin.bar:jdbc-base:${versions["jdbc-base"]}")
-    implementation(fileTree("lib") { include("*.jar") })
 
     // test dependencies
     testImplementation("junit:junit:4.13.1")
