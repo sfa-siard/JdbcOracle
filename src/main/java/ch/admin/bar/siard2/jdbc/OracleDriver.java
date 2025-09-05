@@ -26,7 +26,14 @@ public class OracleDriver
 	extends BaseDriver
 	implements Driver
 {
-  static { System.setProperty("oracle.jdbc.getObjectReturnsXMLType", "false"); }
+  static {
+    System.setProperty("oracle.jdbc.getObjectReturnsXMLType", "false");
+    // Avoid Oracle Net network statistics which triggers oracle.net.nt.Clock initialization
+    System.setProperty("oracle.net.networkStatistics", "false");
+    // As a fallback, disable Oracle Net NIO path (uses TimeoutSocketChannel) to avoid Timer usage
+    System.setProperty("oracle.net.useNIO", "false");
+      System.setProperty("oracle.jdbc.disableMBeanRegistration", "true");
+  }
 	/** logger */
 	private static IndentLogger _il = IndentLogger.getIndentLogger(OracleDriver.class.getName());
   /** protocol sub scheme for Oracle JDBC URL */
@@ -58,7 +65,7 @@ public class OracleDriver
 	/** replace OracleDriver driver by this */
 	static
 	{
-		register();
+		//register();
 	}
 
   /*------------------------------------------------------------------*/

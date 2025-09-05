@@ -12,6 +12,7 @@ package ch.admin.bar.siard2.jdbcx;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.util.Properties;
 
 import ch.admin.bar.siard2.jdbc.*;
 import ch.enterag.utils.jdbcx.*;
@@ -29,6 +30,7 @@ public class OracleDataSource
 	static
 	{
 	  System.setProperty("oracle.jdbc.getObjectReturnsXMLType", "false");
+	  // Avoid Oracle Net network statistics which triggers oracle.net.nt.Clock initialization
 	}
 	
 	/*------------------------------------------------------------------*/
@@ -36,8 +38,16 @@ public class OracleDataSource
 	 * @throws SQLException */	  
 	public OracleDataSource() throws SQLException 
 	{
-	  super(new oracle.jdbc.pool.OracleDataSource()); 
-	} /* constructor OracleDataSource */
+    super(new oracle.jdbc.pool.OracleDataSource()); // todo: this might be wrong...
+    // Ensure Oracle properties are set on the underlying DataSource before any connection is created
+    Properties props = new Properties();
+    // Avoid Oracle Net network statistics (prevents oracle.net.nt.Clock init)
+    props.setProperty("oracle.net.networkStatistics", "false");
+    // Disable FAN and MBean registration to avoid background timers/threads
+    props.setProperty("oracle.jdbc.fanEnabled", "false");
+    props.setProperty("oracle.jdbc.disableMBeanRegistration", "true");
+    getUnwrapped().setConnectionProperties(props);
+  } /* constructor OracleDataSource */
 	
   /*------------------------------------------------------------------*/
   /** constructor
@@ -49,7 +59,13 @@ public class OracleDataSource
 	public OracleDataSource(String sUrl, String sUser, String sPassword)
 	  throws SQLException
 	{
-    super(new oracle.jdbc.pool.OracleDataSource()); 
+    super(new oracle.jdbc.pool.OracleDataSource());
+    // Ensure Oracle properties are set on the underlying DataSource before any connection is created
+    Properties props = new Properties();
+    props.setProperty("oracle.net.networkStatistics", "false");
+    props.setProperty("oracle.jdbc.fanEnabled", "false");
+    props.setProperty("oracle.jdbc.disableMBeanRegistration", "true");
+    getUnwrapped().setConnectionProperties(props);
 	  setUrl(sUrl);
 	  setUser(sUser);
 	  setPassword(sPassword);

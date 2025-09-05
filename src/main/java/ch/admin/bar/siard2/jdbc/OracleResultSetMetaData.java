@@ -57,18 +57,23 @@ public class OracleResultSetMetaData extends BaseResultSetMetaData implements Re
 	@Override
 	public String getColumnClassName(int column) throws SQLException
 	{
-    Class<?> cls = null;
+		Class<?> cls = null;
 		String sClassName = super.getColumnClassName(column);
-		if (sClassName != null)
-	    cls = mapCLASS_ORACLE_TO_ISO.get(sClassName);
-		else
-		{
-	    int iColumnType = super.getColumnType(column);
-	    switch(iColumnType)
-	    {
-        case 100: cls = Float.class; break;
-        case 101: cls = Double.class; break;
-	    }
+		if (sClassName != null) {
+			// Try to map Oracle-specific class names to standard ones
+			cls = mapCLASS_ORACLE_TO_ISO.get(sClassName);
+			// If no mapping exists, return the original non-null class name
+			if (cls == null)
+				return sClassName;
+		}
+		else {
+			// Some Oracle drivers may return null here; fall back to JDBC type
+			int iColumnType = super.getColumnType(column);
+			switch(iColumnType) {
+				case 100: cls = Float.class; break;
+				case 101: cls = Double.class; break;
+				default: cls = Object.class; break; // sensible default to avoid NPE
+			}
 		}
 		return cls.getName();
 	} /* getColumnClassName */
