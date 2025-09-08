@@ -11,9 +11,13 @@ Created    : 16.06.2016, Simon Jutz
 
 package ch.admin.bar.siard2.jdbc;
 
+import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.Driver;
+import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Enumeration;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.Properties;
 import ch.enterag.utils.jdbc.BaseDriver;
 import ch.enterag.utils.logging.IndentLogger;
@@ -53,20 +57,79 @@ public class OracleDriver
     return sUrl;
   } /* getUrl */
 
+  /** Idempotent registration guard */
+  private static final AtomicBoolean REGISTERED = new AtomicBoolean(false);
 
-  /** register this driver, replacing original H2 driver
-   */
-  public static void register()
+  /** Ensure the wrapper driver is registered exactly once in this JVM. */
+  public static void ensureRegistered()
   {
-    try { BaseDriver.register(new OracleDriver(), "oracle.jdbc.OracleDriver", "jdbc:oracle:thin:@localhost:1521:orcl"); }
-    catch(Exception e) { throw new Error(e); }
-  } /* register */
+    if (REGISTERED.compareAndSet(false, true))
+    {
+      safeRegister();
+    }
+  }
 
-	/** replace OracleDriver driver by this */
-	static
-	{
-		register(); // TODO: this was the problem. But I think we have to do this here?
-	}
+  /** Explicitly unregister the wrapper and restore the plain Oracle driver. */
+  public static void unregister()
+  {
+    // Deregister our wrapper
+    try
+    {
+      Enumeration<Driver> drivers = DriverManager.getDrivers();
+      while (drivers.hasMoreElements())
+      {
+        Driver d = drivers.nextElement();
+        if (d.getClass() == OracleDriver.class)
+        {
+          try { DriverManager.deregisterDriver(d); } catch (SQLException ignore) {}
+        }
+      }
+      // Re-register plain Oracle driver to keep DriverManager usable in shared JVMs
+      try
+      {
+        Class<?> cls = Class.forName("oracle.jdbc.OracleDriver");
+        Constructor<?> ctor = cls.getDeclaredConstructor();
+        ctor.setAccessible(true);
+        Driver oracle = (Driver)ctor.newInstance();
+        DriverManager.registerDriver(oracle);
+      }
+      catch (Throwable t)
+      {
+        // Non-fatal: environments using only DataSource don't require DriverManager fallback
+      }
+    }
+    finally
+    {
+      REGISTERED.set(false);
+    }
+  }
+
+  /** Perform robust registration: remove existing drivers, then register our wrapper. */
+  private static void safeRegister()
+  {
+    try
+    {
+      // Remove any previously registered Oracle or wrapper drivers (possibly from other classloaders)
+      Enumeration<Driver> enumDriver = DriverManager.getDrivers();
+      while (enumDriver.hasMoreElements())
+      {
+        Driver d = enumDriver.nextElement();
+        String name = d.getClass().getName();
+        if (name.equals("oracle.jdbc.OracleDriver") || d.getClass() == OracleDriver.class)
+        {
+          try { DriverManager.deregisterDriver(d); } catch (SQLException ignore) {}
+        }
+      }
+
+      // Register wrapper and map the underlying Oracle driver via BaseDriver
+      BaseDriver.register(new OracleDriver(), "oracle.jdbc.OracleDriver", "jdbc:oracle:thin:@localhost:1521:orcl");
+    }
+    catch (Exception e)
+    {
+      REGISTERED.set(false);
+      throw new Error(e);
+    }
+  }
 
   /*------------------------------------------------------------------*/
   /** {@inheritDoc}*/
