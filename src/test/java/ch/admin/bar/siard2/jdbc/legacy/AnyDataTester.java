@@ -26,7 +26,6 @@ public class AnyDataTester {
         dsOracle.setPassword(db.getPassword());
         connection = dsOracle.getConnection();
         connection.setAutoCommit(false);
-        System.out.println("JDBC URL: " + db.getJdbcUrl());
     }
 
 

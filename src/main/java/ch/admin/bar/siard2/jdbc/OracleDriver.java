@@ -65,7 +65,7 @@ public class OracleDriver
 	/** replace OracleDriver driver by this */
 	static
 	{
-		//register();
+		register(); // TODO: this was the problem. But I think we have to do this here?
 	}
 
   /*------------------------------------------------------------------*/
