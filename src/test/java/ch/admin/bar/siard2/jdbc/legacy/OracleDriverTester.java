@@ -93,6 +93,6 @@ public class OracleDriverTester {
         int iMajorVersion = _driver.getMajorVersion();
         int iMinorVersion = _driver.getMinorVersion();
         String sVersion = String.valueOf(iMajorVersion) + "." + String.valueOf(iMinorVersion);
-        assertEquals("Wrong Oracle version " + sVersion + " found!", "21.11", sVersion);
+        assertEquals("Wrong Oracle version " + sVersion + " found!", "23.9", sVersion);
     } /* testVersion */
 }
