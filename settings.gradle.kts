@@ -2,7 +2,7 @@ import java.net.URI
 
 plugins {
     // foojay-resolver plugin allows automatic download of JDKs
-    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+    //id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
 rootProject.name = "jdbcoracle"
