@@ -58,6 +58,8 @@ public class OraclePredefinedType
         mapISO_TO_ORACLE.put(PreType.TIMESTAMP,"TIMESTAMP"); // or DATE
         mapISO_TO_ORACLE.put(PreType.INTERVAL,"INTERVAL");
         mapISO_TO_ORACLE.put(PreType.DATALINK,"BLOB");
+        mapISO_TO_ORACLE.put(PreType.BIT, "RAW");
+        mapISO_TO_ORACLE.put(PreType.BIT_VARYING, "RAW");
 	}
 	
 	/*------------------------------------------------------------------*/
@@ -103,7 +105,16 @@ public class OraclePredefinedType
           else
             sType = sType + formatLength();
           break;
-        case DATALINK:
+        case BIT, BIT_VARYING:
+          if (getLength() == iUNDEFINED)
+            setLength(1);
+          int bitByteLength = (getLength() + 7) / 8;
+          if (bitByteLength > iMAX_RAW_LENGTH)
+            sType = K.BLOB.getKeyword();
+          else
+            sType = sType + "(" + bitByteLength + ")";
+          break;
+                case DATALINK:
             sType = K.BLOB.getKeyword();
         case NUMERIC:
         case DECIMAL:
